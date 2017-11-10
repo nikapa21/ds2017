@@ -50,6 +50,20 @@ public class Main {
 		System.out.println(n3.toString());
 		System.out.println(n4.toString());
 		
+		n1.calculateFinger();
+		n2.calculateFinger();
+		n3.calculateFinger();
+		n4.calculateFinger();
+		
+		System.out.println("First ");
+		n1.printFinger();
+		System.out.println("Second ");
+		n2.printFinger();
+		System.out.println("Third ");
+		n3.printFinger();
+		System.out.println("Fourth ");
+		n4.printFinger();
+
 	}
 
 }
