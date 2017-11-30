@@ -1,5 +1,6 @@
 package Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -8,15 +9,21 @@ import java.net.UnknownHostException;
 
 public class MenuRequestThread extends Thread {
 
-    int file;
+    File file;
     int port;
-    int flag = 2;
+    int flag ;
+    File requestFile;
 
-    public MenuRequestThread(int file, int port) {
+    public MenuRequestThread(File file, int port, int flag) {
         this.file = file;
         this.port = port;
+        this.flag = flag;
     }
 
+    public File call() throws InterruptedException {
+        Thread.sleep(20000);
+        return requestFile;
+    }
 
     public void run() {
         Socket requestSocket = null;
@@ -34,8 +41,15 @@ public class MenuRequestThread extends Thread {
             out.writeInt(flag);
             out.flush();
 
-            out.writeInt(file);
-            out.flush();
+            if(flag==2){
+                out.writeObject(file);
+                out.flush();
+            }
+            else if(flag==3) {
+                out.writeObject(file);
+                out.flush();
+                requestFile =(File) in.readObject();
+            }
 
         } catch (UnknownHostException unknownHost) {
             System.err.println("You are trying to connect to an unknown host!");
@@ -45,7 +59,6 @@ public class MenuRequestThread extends Thread {
             try {
                 in.close();
                 out.close();
-
                 requestSocket.close();
             } catch (IOException ioException) {
                 ioException.printStackTrace();

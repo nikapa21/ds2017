@@ -1,5 +1,6 @@
 package Chord;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,16 +16,16 @@ public class ListeningThread extends Thread {
     int id;
     Node n;
     boolean a;
-    ArrayList<Integer> files = new ArrayList<Integer>();
+    ArrayList<File> files = new ArrayList<File>();
+    ArrayList<Integer> filesKeys = new ArrayList<Integer>();
 
     public ListeningThread(int port, int id, Node n) {
-        // TODO Auto-generated constructor stub
+
         this.port = port;
         this.id = id;
         this.n = n;
         System.out.println("sdadas " + port);
     }
-
 
     @Override
     public void run() {
@@ -57,11 +58,14 @@ public class ListeningThread extends Thread {
                         n.printFinger();
                     }
                 } else if (flag == 1) {
-                    ActionNode an = new ActionNode(out, in, files);
+                    ActionNode an = new ActionNode(out, in, files, flag, null, filesKeys);
+                    an.start();
+
+                } else if (flag == 2) {
+                    ActionNode an = new ActionNode(out,in,files,flag,n,filesKeys);
                     an.start();
 
                 }
-
 
             }
         } catch (IOException ioException) {

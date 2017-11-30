@@ -44,7 +44,6 @@ public class RequestThread extends Thread {
             if (flag == 0) {
 
                 //3) Write the integers one by one and flush the stream
-
                 out.writeObject(n);
                 out.flush();
 
@@ -53,7 +52,7 @@ public class RequestThread extends Thread {
                 //this is for test
                 System.out.println("Result from Server>" + n.toString());
 
-            } else if (flag == 1) {
+            } else if (flag == 1) { // fingertable
 
                 out.writeInt(i);
                 out.flush();
@@ -63,7 +62,6 @@ public class RequestThread extends Thread {
                 System.out.println("flag =1>" + n.toString());
 
             }
-
 
         } catch (UnknownHostException unknownHost) {
             System.err.println("You are trying to connect to an unknown host!");

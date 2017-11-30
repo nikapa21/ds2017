@@ -2,18 +2,22 @@ package Master;
 
 import Chord.Node;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MasterNode {
 
     ArrayList<Node> catalogueOfNodes = new ArrayList<Node>();
     int port = 7777;
-    int id = 1;
+    //int id = 1;
 
     public static void main(String args[]) {
 
@@ -48,19 +52,28 @@ public class MasterNode {
                 if (flag == 0) { // insert node
                     //4) Read the node from the stream
                     Node n = (Node) in.readObject();
+                    port = port + 1;
 
                     //set the port and id of the node
-                    if (catalogueOfNodes.size() == 0) {
-                        n.setPort(port + 1);
-                        // n.setId(id);
-                    } else {
-                        n.setPort(catalogueOfNodes.get(catalogueOfNodes.size() - 1).getPort() + 1);
-                        // n.setId(catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId() + 1);
-                    }
+
+                    n.setPort(port);
+                    // n.setId(catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId() + 1);
 
                     //add the node to the list
                     catalogueOfNodes.add(n);
-                    //sort the list by id
+
+                    Collections.sort(catalogueOfNodes, new Comparator<Node>() {
+                        @Override
+                        public int compare(Node o1, Node o2) {
+                            if (o1.getId() > o2.getId())
+                                return 1;
+                            else if (o1.getId() < o2.getId())
+                                return -1;
+                            else
+                                return 0;
+
+                        }
+                    });
 
                     //send the node with the new port and id to the stream
                     out.writeObject(n);
@@ -83,7 +96,6 @@ public class MasterNode {
                     Action a = new Action(catalogueOfNodes, out, in, 0);
                     a.start();
 
-
                 } else if (flag == 2) {
 
                     int flag2 = 1;
@@ -91,8 +103,21 @@ public class MasterNode {
                     Action a = new Action(catalogueOfNodes, out, in, flag2);
                     a.start();
 
-                }
+                } else if (flag == 3) {
 
+                    File file = (File) in.readObject();
+                    int flag2 = 2;
+                    String sha1Hash = HashGeneratorUtils.generateSHA1(file.getName());
+                    int fileKey = new BigInteger(sha1Hash, 16).intValue();
+                    fileKey = fileKey % 64;
+                    MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(0).getPort(), file, flag2,fileKey);
+                    mrt.start();
+                    File requestFile = mrt.call();
+                    mrt.join();
+                    out.writeObject(requestFile);
+                    out.flush();
+
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

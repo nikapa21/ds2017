@@ -1,12 +1,15 @@
 package Test;
 
+
+import java.io.File;
 import java.util.Scanner;
 
 public class Menu {
 
     static final int SERVER_PORT = 7777;
+    static int flag;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         System.out.println("Creating the distributed system, Chord");
 
@@ -31,10 +34,10 @@ public class Menu {
                     commit(sc); // method to commit a file
                     break;
                 case 2:
-                    System.out.println("Searching..."); // method to search a file
+                    search(sc); // method to search a file
                     break;
                 case 3:
-                    exitApplication();        // method to exit the application
+                    exitApplication(); // method to exit the application
                     break;
                 default:
                     System.out.println("Not available! Please select one of the available actions below.");
@@ -46,22 +49,53 @@ public class Menu {
     }
 
     private static void commit(Scanner sc) {
-        System.out.println("Please commit the integer you want to save");
-        while (!sc.hasNextInt()) {
-            System.out.println("Not available! Please commit an integer.");
-            sc.next();
+
+        System.out.println("Please commit the file, by the name, you want to save to the system");
+
+        String fileName = sc.next();
+
+        File file = new File(fileName);
+
+        while (!file.exists()) {
+            System.out.println("The file doesn't exist! Please select a valid file name.");
+            fileName = sc.next();
+            file = new File(fileName);
         }
-        int file = sc.nextInt();
 
-        System.out.println("hisdfa " + file); //debug
+        flag = 2;
 
-        MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT);
+        System.out.println("hisdfa " + file + "wewe " + flag); //debug
+        System.out.println(file.toPath().toString());
+
+        MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT, flag);
         mrt.start();
-
 
     }
 
+    private static void search(Scanner sc) throws InterruptedException {
+
+        System.out.println("Please select the file you want to search and take");
+
+        String fileName = sc.next();
+        File file = new File(fileName);
+        flag = 3;
+        System.out.println("hisdfa " + file + " " + flag); //debug
+
+        MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT, flag);
+        mrt.start();
+        File requestFile = mrt.call();
+        mrt.join();
+
+        if(requestFile==null){
+            System.out.println("The file you want doesn't exist");
+        }
+        else {
+            System.out.println("The requested file is: " + requestFile);
+        }
+    }
+
     private static void exitApplication() {
+
         System.out.println("Thank you for visiting us!");
         System.exit(0);
 
@@ -77,6 +111,3 @@ public class Menu {
     }
 
 }
-
-
-

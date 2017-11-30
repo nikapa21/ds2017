@@ -1,5 +1,6 @@
 package Master;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,20 +10,27 @@ import java.net.UnknownHostException;
 public class MasterRequestThread extends Thread {
 
     int port;
-    int file=0;
+    File file;
     int flag2;
+    File requestFile;
+    int fileKey;
 
-    public MasterRequestThread(int port,int flag2) {
+    public MasterRequestThread(int port, int flag2) {
         this.port = port;
         this.flag2 = flag2;
     }
 
-    public MasterRequestThread(int port,int file,int flag2) {
+    public MasterRequestThread(int port, File file, int flag2, int fileKey) {
         this.port = port;
         this.file = file;
         this.flag2 = flag2;
+        this.fileKey = fileKey;
     }
 
+    public File call() throws InterruptedException {
+        Thread.sleep(2000);
+        return requestFile;
+    }
 
     public void run() {
         Socket requestSocket = null;
@@ -40,15 +48,24 @@ public class MasterRequestThread extends Thread {
             out.writeInt(flag2);
             out.flush();
 
-            if(flag2==0){
+            if (flag2 == 0) {
                 out.writeBoolean(true);
                 out.flush();
-            }
-            else if(flag2==1){
-                out.writeInt(file);
+            } else if (flag2 == 1) {
+                out.writeObject(file);
                 out.flush();
-            }
 
+                out.writeInt(fileKey);
+                out.flush();
+            } else if (flag2 == 2) {
+                out.writeObject(file);
+                out.flush();
+
+                out.writeInt(fileKey);
+                out.flush();
+
+                requestFile = (File)in.readObject();
+            }
 
         } catch (UnknownHostException unknownHost) {
             System.err.println("You are trying to connect to an unknown host!");
