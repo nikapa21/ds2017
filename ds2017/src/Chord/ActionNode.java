@@ -26,7 +26,7 @@ public class ActionNode extends Thread {
     public void run() {
         try {
 
-            if (flag == 1) {
+            if (flag == 1) { // commit
                 File file = (File) in.readObject();
                 files.add(file);
                 printFiles();
@@ -34,19 +34,25 @@ public class ActionNode extends Thread {
                 int keyFile = in.readInt();
                 fileKeys.add(keyFile);
                 printFilesKeys();
-            } else if (flag == 2) {
-                File file = (File)in.readObject();
+            } else if (flag == 2) { // search
+                //File file = (File)in.readObject();
 
                 int keyFile = in.readInt();
 
                 for (int i = 0; i < fileKeys.size(); i++) {
 
-                    if(fileKeys.get(i)==keyFile){
+                    PrintDebug();
+                    if(fileKeys.get(i)==keyFile) {
                         out.writeObject(files.get(i));
                         out.flush();
+                        return;
                     }
 
                 }
+
+                n.lookUp(keyFile);
+
+
 
                 //int nextNodeToLook = n.lookUp(file);
 
@@ -90,6 +96,11 @@ public class ActionNode extends Thread {
             System.out.println(fileKeys.get(i));
         }
 
+    }
+
+    void  PrintDebug()
+    {
+        System.out.println("searching files ");
     }
 
 }

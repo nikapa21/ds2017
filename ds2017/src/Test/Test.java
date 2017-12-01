@@ -22,20 +22,25 @@ public class Test {
     public static void main(String args[]) throws HashGenerationException, IOException {
 
         String test = "jac.txt";
-        String test1 = "jac.txt";
+        String test1 = "second.txt";
         System.out.println("SHA-1 Hash: " + test);
+        System.out.println("SHA-1 Hash: " + test1);
         //AeSimpleSHA1.SHA1(test);
 
        // int hashtest = test.hashCode();
         String sha1Hash = HashGeneratorUtils.generateSHA1(test);
         String sha1Hash1 = HashGeneratorUtils.generateSHA1(test1);
 
+        int i = (int) (Math.random()*((10 - 5) + 1) + 5);
+        System.out.println(i);
         int t = new BigInteger(sha1Hash, 16).intValue();
         int t1 = new BigInteger(sha1Hash1, 16).intValue();
 
         System.out.println("SHA-1 Hash: " + sha1Hash);
+        System.out.println("SHA-1 Hash: " + t);
         System.out.println("SHA-1 Hash: " + t % 64);
         System.out.println("SHA-1 Hash: " + sha1Hash1);
+        System.out.println("SHA-1 Hash: " + t1);
         System.out.println("SHA-1 Hash: " + t1 % 64);
         //System.out.println("hash code: " + (hashtest));
        // System.out.println("hash code: " + (hashtest % 64));

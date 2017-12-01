@@ -79,15 +79,24 @@ public class Node implements Serializable {
         }
     }
 
-    public int lookUp(int file) {
+    public void lookUp(int fileKey) {
 
-        for (int i = fingerTable.length - 1; i >= 0; i--) {
-            if (file == fingerTable[i].getId()) {
-                return fingerTable[i].getPort();
-
+        System.out.println("inside lookup");
+        for (int i = fingerTable.length - 1; i >= 0; i--) {//looking in finger table for a node id <= filekey
+            System.out.println("inside lookup for ,node: " +fingerTable[i].getId());
+            if (fileKey <= fingerTable[i].getId()) {
+                //return fingerTable[i].getPort();
+                System.out.println("request thread from node: " +fingerTable[i].getId());
+                RequestThread rt = new RequestThread(fingerTable[i], fileKey, 2);
+                rt.start();
+               return;
             }
         }
-        return 0;
+        System.out.println("no node found in the finger table");
+        //if no such node found in the finger table look in the successor
+        RequestThread rt = new RequestThread(fingerTable[0], fileKey, 2);
+        rt.start();
+
 
     }
 

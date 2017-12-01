@@ -25,7 +25,7 @@ public class Action extends Thread {
     public void run() {
         try {
 
-            if (flag2 == 0) {
+            if (flag2 == 0) { // finger table
                 int a = (int) in.readInt();
                 //System.out.println("skaei edw server");
 
@@ -43,12 +43,12 @@ public class Action extends Thread {
 
                 }
 
-            } else if (flag2 == 1) {
+            } else if (flag2 == 1) { // commit file
 
                 File file = (File) in.readObject();
                 String sha1Hash = HashGeneratorUtils.generateSHA1(file.getName());
                 int fileKey = new BigInteger(sha1Hash, 16).intValue();
-                fileKey = fileKey % 64;
+                fileKey = Math.abs(fileKey % 64);
 
                 for (int i = 0; i < catalogueOfNodes.size(); i++) {
 

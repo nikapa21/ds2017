@@ -50,18 +50,18 @@ public class ListeningThread extends Thread {
 
                 int flag = (int) in.readInt();
 
-                if (flag == 0) {
+                if (flag == 0) { // new node arrives
                     a = in.readBoolean();
 
                     if (a) {
                         n.calculateFinger();
                         n.printFinger();
                     }
-                } else if (flag == 1) {
+                } else if (flag == 1) { // commit
                     ActionNode an = new ActionNode(out, in, files, flag, null, filesKeys);
                     an.start();
 
-                } else if (flag == 2) {
+                } else if (flag == 2) { // search
                     ActionNode an = new ActionNode(out,in,files,flag,n,filesKeys);
                     an.start();
 

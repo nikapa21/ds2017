@@ -12,7 +12,6 @@ public class MenuRequestThread extends Thread {
     File file;
     int port;
     int flag ;
-    File requestFile;
 
     public MenuRequestThread(File file, int port, int flag) {
         this.file = file;
@@ -21,8 +20,9 @@ public class MenuRequestThread extends Thread {
     }
 
     public File call() throws InterruptedException {
-        Thread.sleep(20000);
-        return requestFile;
+        //Thread.sleep(20000);
+        this.join();
+        return file;
     }
 
     public void run() {
@@ -41,14 +41,15 @@ public class MenuRequestThread extends Thread {
             out.writeInt(flag);
             out.flush();
 
+            //flag == 2 Commits file
             if(flag==2){
                 out.writeObject(file);
                 out.flush();
-            }
+            }//flag = 3 searches file
             else if(flag==3) {
                 out.writeObject(file);
                 out.flush();
-                requestFile =(File) in.readObject();
+                file =(File) in.readObject();
             }
 
         } catch (UnknownHostException unknownHost) {

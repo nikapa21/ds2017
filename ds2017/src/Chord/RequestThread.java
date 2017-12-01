@@ -8,6 +8,8 @@ public class RequestThread extends Thread {
     int flag;
     Node n;
     int i;
+    int fileKey;
+    File file;
 
     public RequestThread(Node n, int flag) {
         this.n = n;
@@ -16,6 +18,17 @@ public class RequestThread extends Thread {
 
     public RequestThread(int i, int flag) {
         this.i = i;
+        this.flag = flag;
+    }
+
+    public RequestThread(Node n,int fileKey, int flag) {
+        this.n = n;
+        this.flag = flag;
+        this.fileKey = fileKey;
+    }
+
+    public RequestThread(File file, int flag) {
+        this.file = file;
         this.flag = flag;
     }
 
@@ -31,8 +44,13 @@ public class RequestThread extends Thread {
         ObjectInputStream in = null;
         try {
 
-            //1) Create a socket to ip and to port 7777:
-            requestSocket = new Socket("localhost", 7777);
+
+            if(flag == 2)   requestSocket = new Socket("localhost", n.getPort());
+            else {
+                //1) Create a socket to ip and to port 7777:
+                requestSocket = new Socket("localhost", 7777);
+            }
+
 
             //2) Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
@@ -41,7 +59,7 @@ public class RequestThread extends Thread {
             out.writeInt(flag);
             out.flush();
 
-            if (flag == 0) {
+            if (flag == 0) {//insert node
 
                 //3) Write the integers one by one and flush the stream
                 out.writeObject(n);
@@ -62,6 +80,17 @@ public class RequestThread extends Thread {
                 System.out.println("flag =1>" + n.toString());
 
             }
+            else  if (flag == 2)//search
+            {
+                System.out.println("sending search request " + n.toString());
+                out.writeInt(fileKey);
+                out.flush();
+
+
+                File fileReturned = (File) in.readObject();
+                if(fileReturned != null)                System.out.println("file found from other node: " + n.toString());
+            }
+
 
         } catch (UnknownHostException unknownHost) {
             System.err.println("You are trying to connect to an unknown host!");

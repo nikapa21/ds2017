@@ -16,7 +16,6 @@ public class Menu {
         Scanner sc = new Scanner(System.in);
         int i;
 
-
         while (true) {
 
             printMenu();
@@ -79,18 +78,19 @@ public class Menu {
         String fileName = sc.next();
         File file = new File(fileName);
         flag = 3;
-        System.out.println("hisdfa " + file + " " + flag); //debug
+        System.out.println("hisdfa " + file + " " + flag); //de
+        // bug
 
         MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT, flag);
         mrt.start();
-        File requestFile = mrt.call();
+        file = mrt.call();
         mrt.join();
 
-        if(requestFile==null){
+        if(file==null){
             System.out.println("The file you want doesn't exist");
         }
         else {
-            System.out.println("The requested file is: " + requestFile);
+            System.out.println("The requested file is: " + file);
         }
     }
 

@@ -48,18 +48,18 @@ public class MasterRequestThread extends Thread {
             out.writeInt(flag2);
             out.flush();
 
-            if (flag2 == 0) {
+            if (flag2 == 0) { //insert node
                 out.writeBoolean(true);
                 out.flush();
-            } else if (flag2 == 1) {
+            } else if (flag2 == 1) { // commit file
                 out.writeObject(file);
                 out.flush();
 
                 out.writeInt(fileKey);
                 out.flush();
-            } else if (flag2 == 2) {
-                out.writeObject(file);
-                out.flush();
+            } else if (flag2 == 2) { // search file
+                //out.writeObject(file);
+               // out.flush();
 
                 out.writeInt(fileKey);
                 out.flush();

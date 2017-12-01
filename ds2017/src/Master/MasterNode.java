@@ -49,7 +49,7 @@ public class MasterNode {
 
                 int flag = (int) in.readInt();
 
-                if (flag == 0) { // insert node
+                if (flag == 0) { // flag = 0 insert node
                     //4) Read the node from the stream
                     Node n = (Node) in.readObject();
                     port = port + 1;
@@ -84,39 +84,43 @@ public class MasterNode {
                         System.out.println(catalogueOfNodes.get(i).toString());
                     }
 
-                    int flag2 = 0;
-                    //inform nodes that a node is inserted in system
+                    int flag2 = 0; //flag2 is for nodes. flag is for server
+                    //flag2 = 0 inform nodes that a node is inserted in system
                     for (int i = 0; i < catalogueOfNodes.size(); i++) {
                         MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), flag2);
                         mrt.start();
                     }
 
-                } else if (flag == 1) { // for finger table
+                } else if (flag == 1) { // flag = 1 for finger table
 
                     Action a = new Action(catalogueOfNodes, out, in, 0);
                     a.start();
 
-                } else if (flag == 2) {
+                } else if (flag == 2) {// flag = 2 commit file from menu
 
                     int flag2 = 1;
 
                     Action a = new Action(catalogueOfNodes, out, in, flag2);
                     a.start();
 
-                } else if (flag == 3) {
+                } else if (flag == 3) { //flag = 3 search file from menu
 
                     File file = (File) in.readObject();
-                    int flag2 = 2;
+                    int flag2 = 2; // flag2 = 2 for search
                     String sha1Hash = HashGeneratorUtils.generateSHA1(file.getName());
                     int fileKey = new BigInteger(sha1Hash, 16).intValue();
-                    fileKey = fileKey % 64;
-                    MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(0).getPort(), file, flag2,fileKey);
+                    fileKey = Math.abs( fileKey % 64);
+                    MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), null, flag2, fileKey);
                     mrt.start();
                     File requestFile = mrt.call();
                     mrt.join();
                     out.writeObject(requestFile);
                     out.flush();
 
+                }
+                else if(flag == 4)
+                {
+                    //create a new request to menu to return the file
                 }
             }
         } catch (Exception e) {
