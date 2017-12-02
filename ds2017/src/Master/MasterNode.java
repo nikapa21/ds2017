@@ -112,15 +112,14 @@ public class MasterNode {
                     fileKey = Math.abs( fileKey % 64);
                     MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), null, flag2, fileKey);
                     mrt.start();
-                    File requestFile = mrt.call();
-                    mrt.join();
-                    out.writeObject(requestFile);
-                    out.flush();
 
                 }
                 else if(flag == 4)
                 {
+                    File requestedFile = (File)in.readObject();
                     //create a new request to menu to return the file
+                    MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
+                    mrt.start();
                 }
             }
         } catch (Exception e) {

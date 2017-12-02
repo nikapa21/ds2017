@@ -10,6 +10,7 @@ public class RequestThread extends Thread {
     int i;
     int fileKey;
     File file;
+    int port;
 
     public RequestThread(Node n, int flag) {
         this.n = n;
@@ -32,6 +33,13 @@ public class RequestThread extends Thread {
         this.flag = flag;
     }
 
+    public RequestThread(int port,File file, int flag) {
+        this.file = file;
+        this.flag = flag;
+        this.port = port;
+        System.out.println("constructor of request thread " + flag);
+    }
+
     //method to send to node the result
     public Node call() throws InterruptedException {
         Thread.sleep(2000);
@@ -46,11 +54,11 @@ public class RequestThread extends Thread {
 
 
             if(flag == 2)   requestSocket = new Socket("localhost", n.getPort());
+            else if(flag == 3) requestSocket = new Socket("localhost",7776);
             else {
                 //1) Create a socket to ip and to port 7777:
                 requestSocket = new Socket("localhost", 7777);
             }
-
 
             //2) Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
@@ -58,7 +66,6 @@ public class RequestThread extends Thread {
 
             out.writeInt(flag);
             out.flush();
-
             if (flag == 0) {//insert node
 
                 //3) Write the integers one by one and flush the stream
@@ -86,10 +93,21 @@ public class RequestThread extends Thread {
                 out.writeInt(fileKey);
                 out.flush();
 
-
-                File fileReturned = (File) in.readObject();
-                if(fileReturned != null)                System.out.println("file found from other node: " + n.toString());
             }
+            else if(flag == 3)//return file to menu for testing
+            {
+                System.out.println("return file to menu " + file.getName());
+                out.writeObject(file);
+                out.flush();
+            }
+            else if(flag == 4)//return file to menu
+            {
+                System.out.println("return file to server " + file.getName());
+                out.writeObject(file);
+                out.flush();
+            }
+
+
 
 
         } catch (UnknownHostException unknownHost) {

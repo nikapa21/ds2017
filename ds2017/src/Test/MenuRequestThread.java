@@ -37,7 +37,6 @@ public class MenuRequestThread extends Thread {
             //2) Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             in = new ObjectInputStream(requestSocket.getInputStream());
-
             out.writeInt(flag);
             out.flush();
 
@@ -49,7 +48,8 @@ public class MenuRequestThread extends Thread {
             else if(flag==3) {
                 out.writeObject(file);
                 out.flush();
-                file =(File) in.readObject();
+
+                //file =(File) in.readObject();
             }
 
         } catch (UnknownHostException unknownHost) {

@@ -1,5 +1,6 @@
 package Chord;
 
+import java.io.File;
 import java.io.Serializable;
 
 public class Node implements Serializable {
@@ -84,7 +85,7 @@ public class Node implements Serializable {
         System.out.println("inside lookup");
         for (int i = fingerTable.length - 1; i >= 0; i--) {//looking in finger table for a node id <= filekey
             System.out.println("inside lookup for ,node: " +fingerTable[i].getId());
-            if (fileKey <= fingerTable[i].getId()) {
+            if (fileKey >= fingerTable[i].getId()) {
                 //return fingerTable[i].getPort();
                 System.out.println("request thread from node: " +fingerTable[i].getId());
                 RequestThread rt = new RequestThread(fingerTable[i], fileKey, 2);
@@ -99,6 +100,7 @@ public class Node implements Serializable {
 
 
     }
+
 
     public void printFinger() {
         for (int i = 0; i < m; i++) {

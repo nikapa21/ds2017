@@ -43,9 +43,11 @@ public class ActionNode extends Thread {
 
                     PrintDebug();
                     if(fileKeys.get(i)==keyFile) {
-                        out.writeObject(files.get(i));
-                        out.flush();
+                        PrintDebug2();
+                        RequestThread rt = new RequestThread(7777, files.get(i), 4);
+                        rt.start();
                         return;
+
                     }
 
                 }
@@ -100,7 +102,11 @@ public class ActionNode extends Thread {
 
     void  PrintDebug()
     {
-        System.out.println("searching files ");
+        System.out.println("searching in files");
+    }
+    void  PrintDebug2()
+    {
+        System.out.println("found file ");
     }
 
 }

@@ -2,6 +2,8 @@ package Test;
 
 
 import java.io.File;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Menu {
@@ -9,12 +11,18 @@ public class Menu {
     static final int SERVER_PORT = 7777;
     static int flag;
 
+    ServerSocket providerSocket;
+    Socket connection = null;
+
     public static void main(String[] args) throws InterruptedException {
 
         System.out.println("Creating the distributed system, Chord");
 
         Scanner sc = new Scanner(System.in);
         int i;
+
+        MenuListeningThread mlt = new MenuListeningThread(7776);
+        mlt.start();
 
         while (true) {
 
@@ -81,17 +89,13 @@ public class Menu {
         System.out.println("hisdfa " + file + " " + flag); //de
         // bug
 
+
         MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT, flag);
         mrt.start();
-        file = mrt.call();
-        mrt.join();
+        //file = mrt.call();
+        //mrt.join();
 
-        if(file==null){
-            System.out.println("The file you want doesn't exist");
-        }
-        else {
-            System.out.println("The requested file is: " + file);
-        }
+
     }
 
     private static void exitApplication() {

@@ -27,6 +27,12 @@ public class MasterRequestThread extends Thread {
         this.fileKey = fileKey;
     }
 
+    public MasterRequestThread(int port, File file, int flag2) {
+        this.port = port;
+        this.file = file;
+        this.flag2 = flag2;
+    }
+
     public File call() throws InterruptedException {
         Thread.sleep(2000);
         return requestFile;
@@ -65,6 +71,13 @@ public class MasterRequestThread extends Thread {
                 out.flush();
 
                 requestFile = (File)in.readObject();
+            }else if (flag2 == 3) { // search file
+                //out.writeObject(file);
+                // out.flush();
+
+                out.writeObject(file);
+                out.flush();
+
             }
 
         } catch (UnknownHostException unknownHost) {
