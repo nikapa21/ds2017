@@ -7,48 +7,47 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class MenuListeningThread extends Thread{
+public class MenuListeningThread extends Thread {
 
     ServerSocket providerSocket;
     Socket connection = null;
-    int port ;
     File requestedFile;
 
-    public MenuListeningThread(int port) {
-        // TODO Auto-generated constructor stub
-        this.port = port;
-    }
-
     @Override
-    public void run(){
+    public void run() {
 
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
 
         try {
-            //1) Create a socket to port 4321 and initialize its capacity to 10 connections
-            providerSocket = new ServerSocket(port, 7776);
-
+            // Create a socket
+            providerSocket = new ServerSocket(7776);
 
             while (true) {
-                //2) Accept connections
+
+                // Accept connections
                 connection = providerSocket.accept();
 
-                //3) Get input and output streams
+                // Get input and output streams
                 out = new ObjectOutputStream(connection.getOutputStream());
                 in = new ObjectInputStream(connection.getInputStream());
 
                 int flag = in.readInt();
 
-                requestedFile = (File)in.readObject();
+                requestedFile = (File) in.readObject(); //read the requested file from server
 
                 if (requestedFile == null) {
+
                     System.out.println("The file you want doesn't exist");
+
                 } else {
+
                     System.out.println("The requested file is: " + requestedFile);
+
                 }
 
             }
+
         } catch (IOException ioException) {
             ioException.printStackTrace();
         } catch (ClassNotFoundException e) {

@@ -1,9 +1,6 @@
 package Test;
 
-
 import java.io.File;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Scanner;
 
 public class Menu {
@@ -11,27 +8,24 @@ public class Menu {
     static final int SERVER_PORT = 7777;
     static int flag;
 
-    ServerSocket providerSocket;
-    Socket connection = null;
-
     public static void main(String[] args) throws InterruptedException {
-
-        System.out.println("Creating the distributed system, Chord");
 
         Scanner sc = new Scanner(System.in);
         int i;
 
-        MenuListeningThread mlt = new MenuListeningThread(7776);
+        MenuListeningThread mlt = new MenuListeningThread();
         mlt.start();
 
         while (true) {
 
             printMenu();
 
-            while (!sc.hasNextInt()) {
+            while (!sc.hasNextInt()) { //if the input is not correct
+
                 System.out.println("Not available! Please select one of the available actions below.");
                 printMenu();
                 sc.next();
+
             }
 
             i = sc.nextInt();
@@ -63,16 +57,17 @@ public class Menu {
 
         File file = new File(fileName);
 
-        while (!file.exists()) {
+        while (!file.exists()) { // if the file doen't exist in directory
+
             System.out.println("The file doesn't exist! Please select a valid file name.");
             fileName = sc.next();
             file = new File(fileName);
+
         }
 
         flag = 2;
 
-        System.out.println("hisdfa " + file + "wewe " + flag); //debug
-        System.out.println(file.toPath().toString());
+        System.out.println(file.toPath().toString()); //debug
 
         MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT, flag);
         mrt.start();
@@ -85,16 +80,11 @@ public class Menu {
 
         String fileName = sc.next();
         File file = new File(fileName);
-        flag = 3;
-        System.out.println("hisdfa " + file + " " + flag); //de
-        // bug
 
+        flag = 3;
 
         MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT, flag);
         mrt.start();
-        //file = mrt.call();
-        //mrt.join();
-
 
     }
 
@@ -106,12 +96,14 @@ public class Menu {
     }
 
     private static void printMenu() {
+
         System.out.println();
         System.out.println("###############");
         System.out.println("Press <<1>> to commit a file...");
         System.out.println("Press <<2>> to search a file...");
         System.out.println("Press <<3>> to exit.");
         System.out.println("###############");
+
     }
 
 }

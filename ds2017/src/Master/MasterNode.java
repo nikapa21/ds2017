@@ -1,12 +1,10 @@
 package Master;
 
 import Chord.Node;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -15,13 +13,13 @@ import java.util.Comparator;
 
 public class MasterNode {
 
-    ArrayList<Node> catalogueOfNodes = new ArrayList<Node>();
-    int port = 7777;
+    ArrayList<Node> catalogueOfNodes = new ArrayList<Node>(); // catalogue for all the nodes in system
+    int port = 7777; // port of server
     //int id = 1;
 
     public static void main(String args[]) {
 
-        new MasterNode().openServer();
+        new MasterNode().openServer();  //open server
 
     }
 
@@ -35,91 +33,78 @@ public class MasterNode {
         ObjectInputStream in = null;
 
         try {
-            //1) Create a socket to port 7777 and initialize its capacity to 100 connections
+            // Create a socket to port 7777
             providerSocket = new ServerSocket(port);
 
             while (true) {
-
-                //2) Accept connections
+                System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
+                // Accept connections
                 connection = providerSocket.accept();
 
-                //3) Get input and output streams
+                // Get input and output streams
                 out = new ObjectOutputStream(connection.getOutputStream());
                 in = new ObjectInputStream(connection.getInputStream());
 
-                int flag = (int) in.readInt();
+                int flag = (int) in.readInt(); // read the flag, so to know what to do
+                System.out.println("The server (Master node) is now open "+ flag);
+                if (flag == 0) { // insert node
 
-                if (flag == 0) { // flag = 0 insert node
-                    //4) Read the node from the stream
-                    Node n = (Node) in.readObject();
-                    port = port + 1;
+                    insertNode(out,in);
 
-                    //set the port and id of the node
+                } else if (flag == 1) { // for finger table
 
-                    n.setPort(port);
-                    // n.setId(catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId() + 1);
-
-                    //add the node to the list
-                    catalogueOfNodes.add(n);
-
-                    Collections.sort(catalogueOfNodes, new Comparator<Node>() {
-                        @Override
-                        public int compare(Node o1, Node o2) {
-                            if (o1.getId() > o2.getId())
-                                return 1;
-                            else if (o1.getId() < o2.getId())
-                                return -1;
-                            else
-                                return 0;
-
-                        }
-                    });
-
-                    //send the node with the new port and id to the stream
-                    out.writeObject(n);
-                    out.flush();
-
-                    //print the nodes
-                    for (int i = 0; i < catalogueOfNodes.size(); i++) {
-                        System.out.println(catalogueOfNodes.get(i).toString());
-                    }
-
-                    int flag2 = 0; //flag2 is for nodes. flag is for server
-                    //flag2 = 0 inform nodes that a node is inserted in system
-                    for (int i = 0; i < catalogueOfNodes.size(); i++) {
-                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), flag2);
-                        mrt.start();
-                    }
-
-                } else if (flag == 1) { // flag = 1 for finger table
-
-                    Action a = new Action(catalogueOfNodes, out, in, 0);
+                    MasterActionForClients a = new MasterActionForClients(catalogueOfNodes, out, in, 0);
                     a.start();
 
-                } else if (flag == 2) {// flag = 2 commit file from menu
+                } else if (flag == 2) { // commit file
 
-                    int flag2 = 1;
-
-                    Action a = new Action(catalogueOfNodes, out, in, flag2);
+                    MasterActionForClients a = new MasterActionForClients(catalogueOfNodes, out, in, 1);
                     a.start();
 
-                } else if (flag == 3) { //flag = 3 search file from menu
+                } else if (flag == 3) { // search file
 
-                    File file = (File) in.readObject();
-                    int flag2 = 2; // flag2 = 2 for search
-                    String sha1Hash = HashGeneratorUtils.generateSHA1(file.getName());
-                    int fileKey = new BigInteger(sha1Hash, 16).intValue();
-                    fileKey = Math.abs( fileKey % 64);
-                    MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), null, flag2, fileKey);
-                    mrt.start();
+                    MasterActionForClients a = new MasterActionForClients(catalogueOfNodes,out,in,2);
+                    a.start();
 
-                }
-                else if(flag == 4)
-                {
+                }else if(flag == 4) { // return the requested file to user
+
                     File requestedFile = (File)in.readObject();
+                    for(int i=0;i<catalogueOfNodes.size()-1;i++){
+
+                        catalogueOfNodes.get(i).counterForLookUp=false;
+                        System.out.print(catalogueOfNodes.get(i).counterForLookUp);
+
+                    }
+
                     //create a new request to menu to return the file
                     MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
                     mrt.start();
+
+                }
+                else if(flag == 5)//return a random node
+                {
+                    if(catalogueOfNodes.size()> 0)
+                    {
+                        out.writeObject(catalogueOfNodes.get(0));
+                        out.flush();
+
+                    }
+                    else
+                    {
+                        out.writeObject(null);
+                        out.flush();
+                    }
+                    AddNodeToList((Node) in.readObject());
+                }
+                else if(flag == 8)//send to all node signal to update their tables
+                {
+                    MasterRequestThread a;
+                    for(int i=0;i<catalogueOfNodes.size()-1;i++){
+
+                        a = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 8);
+                        a.start();
+
+                    }
                 }
             }
         } catch (Exception e) {
@@ -132,4 +117,53 @@ public class MasterNode {
             }
         }
     }
+
+    void insertNode( ObjectOutputStream out, ObjectInputStream in) throws IOException, ClassNotFoundException {
+
+        // Read the node from the stream
+        Node n = (Node) in.readObject();
+        port = port + 1;
+
+        //set the port and id of the node
+        n.setPort(port);
+        // n.setId(catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId() + 1);
+
+       //AddNodeToList(n);
+
+        //send the node with the new port and id to the stream
+        out.writeObject(n);
+        out.flush();
+
+        //inform nodes that a node is inserted in system
+        //for (int i = 0; i < catalogueOfNodes.size(); i++) {
+        //    MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 0);
+       //     mrt.start();
+        //}
+
+    }
+
+    void AddNodeToList(Node n)
+    {
+        //add the node to the list
+        catalogueOfNodes.add(n);
+
+        Collections.sort(catalogueOfNodes, new Comparator<Node>() { // sort the catalogue of nodes by id
+            @Override
+            public int compare(Node o1, Node o2) {
+                if (o1.getId() > o2.getId())
+                    return 1;
+                else if (o1.getId() < o2.getId())
+                    return -1;
+                else
+                    return 0;
+            }
+        });
+
+        //print the nodes,for test
+        for (int i = 0; i < catalogueOfNodes.size(); i++) {
+            System.out.println(catalogueOfNodes.get(i).toString());
+        }
+    }
+
+
 }

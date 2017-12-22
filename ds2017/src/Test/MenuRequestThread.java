@@ -14,42 +14,42 @@ public class MenuRequestThread extends Thread {
     int flag ;
 
     public MenuRequestThread(File file, int port, int flag) {
+
         this.file = file;
         this.port = port;
         this.flag = flag;
-    }
 
-    public File call() throws InterruptedException {
-        //Thread.sleep(20000);
-        this.join();
-        return file;
     }
 
     public void run() {
+
         Socket requestSocket = null;
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
+
         try {
 
-            //1) Create a socket to ip and to port 7777:
+            // Create a socket to ip and to port 7777:
             requestSocket = new Socket("localhost", port);
 
-            //2) Get input and output streams
+            // Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             in = new ObjectInputStream(requestSocket.getInputStream());
+
             out.writeInt(flag);
             out.flush();
 
-            //flag == 2 Commits file
-            if(flag==2){
-                out.writeObject(file);
-                out.flush();
-            }//flag = 3 searches file
-            else if(flag==3) {
+            if(flag==2){ // commit/save file
+
                 out.writeObject(file);
                 out.flush();
 
-                //file =(File) in.readObject();
+            }
+            else if(flag==3) { // search file
+
+                out.writeObject(file);
+                out.flush();
+
             }
 
         } catch (UnknownHostException unknownHost) {
