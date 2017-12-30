@@ -1,5 +1,6 @@
 *.class
 *.iml
 .idea
+ds2017/.idea
 ds2017/bin
 ds2017/out

@@ -50,6 +50,7 @@ public class MenuListeningThread extends Thread {
                     //We have the file, no need for Google API
                 }
                 //TODO Render the route
+                Menu.printMenu();
             }
 
         } catch (IOException ioException) {

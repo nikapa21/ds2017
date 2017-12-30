@@ -106,7 +106,7 @@ public class Menu {
 
     }
 
-    private static void printMenu() {
+    public static void printMenu() {
 
         System.out.println();
         System.out.println("###############");

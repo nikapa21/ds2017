@@ -1,8 +1,10 @@
 package Master;
 
 import Chord.Node;
+
 import java.io.*;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.util.*;
 
 public class MasterActionForClients extends Thread {
@@ -57,6 +59,9 @@ public class MasterActionForClients extends Thread {
 
                 File file = (File) in.readObject(); //read the file
 
+                InetAddress clientIp = (InetAddress) in.readObject();//read the requesting IP
+                System.out.println("Received a commit request from client IP " + clientIp);
+
                 String sha1Hash = HashGenerator.generateSHA1(file.getName()); //hash the name of file
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); // convert hex to int
                 fileKey = Math.abs(fileKey % 64);
@@ -65,13 +70,13 @@ public class MasterActionForClients extends Thread {
 
                     if (fileKey <= catalogueOfNodes.get(i).getId()) {
 
-                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), file, flag2, fileKey);
+                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), file, flag2, fileKey, clientIp);
                         mrt.start();
                         break;
 
                     } else if (fileKey > catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId()) {
 
-                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(0).getPort(), file, flag2, fileKey);
+                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(0).getPort(), file, flag2, fileKey, clientIp);
                         mrt.start();
                         break;
 
@@ -82,13 +87,16 @@ public class MasterActionForClients extends Thread {
             } else if(flag2==2){ //search file
 
                 System.out.println("Received order from search action. Waiting for filename...");
-                File file = (File) in.readObject();
+                File file = (File) in.readObject();//read the file
+
+                InetAddress clientIp = (InetAddress) in.readObject();//read the requesting IP
+                System.out.println("Received a commit request from client IP " + clientIp);
 
                 String sha1Hash = HashGenerator.generateSHA1(file.getName());// hash the name of file with sha1
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); //convert the hex to big int
                 fileKey = Math.abs(fileKey % 64);
 
-                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), null, 2,fileKey);
+                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), null, 2,fileKey, clientIp);
                 mrt.start();
 
             }

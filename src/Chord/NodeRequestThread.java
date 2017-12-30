@@ -11,34 +11,36 @@ public class NodeRequestThread extends Thread {
     int fileKey;
     File file;
     int counterForExistanceOfFile;
+    InetAddress clientIp;
 
     public NodeRequestThread(Node n, int flag) { //constructor 1
 
         this.n = n;
         this.flag = flag;
-
     }
 
     public NodeRequestThread(int i, int flag) {//constructor 2
 
         this.i = i;
         this.flag = flag;
-
     }
 
-    public NodeRequestThread(Node n, int fileKey, int flag,int counterForExistanceOfFile) {//constructor 3
+    public NodeRequestThread(Node n, int fileKey, int flag,int counterForExistanceOfFile, InetAddress clientIp) {//constructor 3
 
         this.n = n;
         this.flag = flag;
         this.fileKey = fileKey;
         this.counterForExistanceOfFile=counterForExistanceOfFile;
+        this.clientIp = clientIp;
 
     }
 
-    public NodeRequestThread(File file, int flag) {//constructor 4
+    public NodeRequestThread(File file, int flag, InetAddress clientIp) {//constructor 4
 
         this.file = file;
         this.flag = flag;
+        this.clientIp = clientIp;
+
 
     }
 
@@ -63,9 +65,9 @@ public class NodeRequestThread extends Thread {
 
                 requestSocket = new Socket("localhost", n.getPort());
 
-            } else if (flag == 3) { //send to menu
+            } else if (flag == 4) { //send to menu
 
-                requestSocket = new Socket("localhost", 7776);
+                requestSocket = new Socket(clientIp, 7776);
 
             } else { //send to server
 
@@ -108,14 +110,18 @@ public class NodeRequestThread extends Thread {
                 out.writeInt(counterForExistanceOfFile);
                 out.flush();
 
-            } else if (flag == 3) { // file to menu for testing
+                out.writeObject(clientIp);
+                out.flush();
 
+            } else if (flag == 3) { // file to menu for testing
+                System.out.println("This should never happen ... ");
                 System.out.println("return file to menu " + file.getName());
                 out.writeObject(file);
                 out.flush();
 
             } else if (flag == 4) {//return file to menu
 
+                System.out.println("Sending the file back to the menu ");
                 out.writeObject(file);
                 out.flush();
 

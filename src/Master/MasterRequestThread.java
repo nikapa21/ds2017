@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -15,6 +16,7 @@ public class MasterRequestThread extends Thread {
     File file;
     int flag2;
     int fileKey;
+    InetAddress clientIp;
 
     public MasterRequestThread(int port, int flag2) { //constructor 1
 
@@ -23,12 +25,13 @@ public class MasterRequestThread extends Thread {
 
     }
 
-    public MasterRequestThread(int port, File file, int flag2, int fileKey) { //constructor 2
+    public MasterRequestThread(int port, File file, int flag2, int fileKey, InetAddress clientIp) { //constructor 2
 
         this.port = port;
         this.file = file;
         this.flag2 = flag2;
         this.fileKey = fileKey;
+        this.clientIp = clientIp;
 
     }
 
@@ -45,18 +48,22 @@ public class MasterRequestThread extends Thread {
         Socket requestSocket = null;
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
-
+        String chordNodeIP = "localhost";
+        int chordNodePort = port;
         try {
 
-            // Create a socket
-            requestSocket = new Socket("localhost", port);
-            System.out.println("master request port"+port);
+            // open a socket from the master to the chord node that will handle the flag action
+            requestSocket = new Socket(chordNodeIP, chordNodePort);
+
+            System.out.println("master opens a socket to the node with port " + chordNodePort);
+            System.out.println("master sends flag action " + flag2);
+            System.out.println("master forwards client IP " + clientIp);
 
             // Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             in = new ObjectInputStream(requestSocket.getInputStream());
 
-            out.writeInt(flag2); // send flag
+            out.writeInt(flag2); // the master sends the flag to the node
             out.flush();
 
             if (flag2 == 0) { // to inform nodes that a new node is on system
@@ -66,10 +73,13 @@ public class MasterRequestThread extends Thread {
 
             } else if (flag2 == 1) { // commit(save) file
 
-                out.writeObject(file);
+                out.writeObject(file); // send the file name
                 out.flush();
 
-                out.writeInt(fileKey);
+                out.writeInt(fileKey); // send the key
+                out.flush();
+
+                out.writeObject(clientIp); // send(piggyback) the ip that requested the file
                 out.flush();
 
             } else if (flag2 == 2) { // search file
@@ -79,6 +89,9 @@ public class MasterRequestThread extends Thread {
 
                 //Counter of hops
                 out.writeInt(0);
+                out.flush();
+
+                out.writeObject(clientIp);
                 out.flush();
 
             } else if (flag2 == 3) { // send the requested file back to user

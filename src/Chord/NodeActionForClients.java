@@ -1,6 +1,7 @@
 package Chord;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.util.*;
 
 public class NodeActionForClients extends Thread {
@@ -40,15 +41,21 @@ public class NodeActionForClients extends Thread {
                 fileKeys.add(keyFile);
                 printFilesKeys();
 
+                InetAddress clientIp = (InetAddress) in.readObject();
+                System.out.println("The Node receive a flag action " + flag + " initially ordered by the client IP " + clientIp); //debug
+
             } else if (flag == 2) { //search file
 
                 int keyFile = in.readInt();
 
                 int counterForExistenceOfFile = in.readInt();
 
+                InetAddress clientIp = (InetAddress) in.readObject();
+                System.out.println("The Node receive a flag action " + flag + " initially ordered by the client IP " + clientIp); //debug
+
                 if (counterForExistenceOfFile>10){
 
-                    NodeRequestThread rt = new NodeRequestThread((File) null, 4);
+                    NodeRequestThread rt = new NodeRequestThread((File) null, 4, clientIp);
                     rt.start();
 
                     return;
@@ -60,8 +67,9 @@ public class NodeActionForClients extends Thread {
                     if(memoryKeys.get(i)==keyFile)
                     {
                         PrintDebug3();
-                        //return file found to menu
-                        NodeRequestThread rt = new NodeRequestThread(memory.get(i),4);
+                        //return the file found, directly back to the menu with client IP
+                        System.out.println("found keyfile in memory"+ keyFile);
+                        NodeRequestThread rt = new NodeRequestThread(memory.get(i),4, clientIp);
                         rt.start();
 
                         return;//file found
@@ -76,7 +84,7 @@ public class NodeActionForClients extends Thread {
                     if(fileKeys.get(i)==keyFile) {
 
                         PrintDebug2();
-
+                        System.out.println("found keyfile in disk"+ keyFile);
                         if(memoryKeys.contains(keyFile))//last requested object added in the last position of the array
                         {
                             memoryKeys.remove(keyFile);
@@ -96,7 +104,7 @@ public class NodeActionForClients extends Thread {
                         memoryKeys.add(keyFile);
                         memory.add(files.get(i));
 
-                        NodeRequestThread rt = new NodeRequestThread(files.get(i),4);
+                        NodeRequestThread rt = new NodeRequestThread(files.get(i),4, clientIp);
                         rt.start();
 
                         return;
@@ -106,7 +114,7 @@ public class NodeActionForClients extends Thread {
                 }
 
 
-                n.lookUp(keyFile,counterForExistenceOfFile); //if file isn't in this node
+                n.lookUp(keyFile, counterForExistenceOfFile, clientIp); //if file isn't in this node
 
 
             }
@@ -134,7 +142,7 @@ public class NodeActionForClients extends Thread {
         for (int i = 0; i < fileKeys.size(); i++) {
 
             System.out.println("the size is " + fileKeys.size());
-            System.out.println(fileKeys.get(i));
+            System.out.println("Filekeys " + fileKeys.get(i));
 
         }
 

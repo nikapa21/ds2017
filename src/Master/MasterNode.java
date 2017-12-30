@@ -37,12 +37,13 @@ public class MasterNode {
 
             // Create a socket to port 7777
             providerSocket = new ServerSocket(port);
-            System.out.println("master node port"+port);
+            System.out.println("master node port" + port);
 
             while (true) {
 
                 // Accept connections
                 connection = providerSocket.accept();
+
 
                 // Get input and output streams
                 out = new ObjectOutputStream(connection.getOutputStream());
@@ -74,6 +75,7 @@ public class MasterNode {
                     File requestedFile = (File)in.readObject();
 
                     //create a new request to menu to return the file
+                    System.out.println("This should never happen because the nodes return the file directly to menu ");
                     MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
                     mrt.start();
 

@@ -2,6 +2,7 @@ package Chord;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 public class Node implements Serializable {
@@ -116,7 +117,7 @@ public class Node implements Serializable {
     }
 
     //look up for the file
-    public void lookUp(int fileKey, int counterForExistenceOfFile) {
+    public void lookUp(int fileKey, int counterForExistenceOfFile, InetAddress clientIp) {
 
         counterForExistenceOfFile++;
 
@@ -130,7 +131,7 @@ public class Node implements Serializable {
 
                 System.out.println("request thread from node: " + fingerTable[i].getId());
 
-                NodeRequestThread rt = new NodeRequestThread(fingerTable[i], fileKey, 2,counterForExistenceOfFile);
+                NodeRequestThread rt = new NodeRequestThread(fingerTable[i], fileKey, 2,counterForExistenceOfFile, clientIp);
                 rt.start();
 
                 return;
@@ -142,7 +143,7 @@ public class Node implements Serializable {
         System.out.println("no node found in the finger table");
 
         //if no such node found in the finger table look in the successor
-        NodeRequestThread rt = new NodeRequestThread(fingerTable[0], fileKey, 2,counterForExistenceOfFile);
+        NodeRequestThread rt = new NodeRequestThread(fingerTable[0], fileKey, 2,counterForExistenceOfFile, clientIp);
         rt.start();
     }
 

@@ -7,13 +7,29 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class MenuRequestThread extends Thread {
 
     File file;
     int port;
     int flag ;
-    String ip = InetAddress.getLocalHost();
+
+    private InetAddress findMyIp(){
+        InetAddress ip = null;
+        String hostname;
+        try {
+            ip = InetAddress.getLocalHost();/*
+            hostname = ip.getHostName();*//*
+            System.out.println("Your current IP address : " + ip);
+            System.out.println("Your current Hostname : " + hostname);*/
+
+        } catch (UnknownHostException e) {
+
+            e.printStackTrace();
+        }
+        return ip;
+    }
 
 
     public MenuRequestThread(File file, int port, int flag) {
@@ -34,7 +50,11 @@ public class MenuRequestThread extends Thread {
 
             // Create a socket to the MasterNode ip and port (7777):
             requestSocket = new Socket("localhost", port);
-            System.out.println("menu is opening a socket to the master node's port "+port);
+            //System.out.println("menu is opening a socket to the master node's port " + port);//debug
+
+            InetAddress myIp = findMyIp();/*
+            System.out.println("Menu has an IP " + myIp);//debug*/
+
             // Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             in = new ObjectInputStream(requestSocket.getInputStream());
@@ -46,13 +66,16 @@ public class MenuRequestThread extends Thread {
             if(flag==2){ // commit/save file
 
                 out.writeObject(file);
-                out.writeObject("localhost");
+                out.writeObject(myIp);
                 out.flush();
+
+
 
             }
             else if(flag==3) { // search file
 
                 out.writeObject(file);
+                out.writeObject(myIp);
                 out.flush();
 
             }
