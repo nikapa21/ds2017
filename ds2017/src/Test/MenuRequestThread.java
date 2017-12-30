@@ -30,7 +30,7 @@ public class MenuRequestThread extends Thread {
 
         try {
 
-            // Create a socket to ip and to port 7777:
+            // Create a socket to the MasterNode ip and port (7777):
             requestSocket = new Socket("localhost", port);
             System.out.println("menu request port"+port);
             // Get input and output streams
