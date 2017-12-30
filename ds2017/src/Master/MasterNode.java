@@ -33,11 +33,14 @@ public class MasterNode {
         ObjectInputStream in = null;
 
         try {
+            System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
+
             // Create a socket to port 7777
             providerSocket = new ServerSocket(port);
+            System.out.println("master node port"+port);
 
             while (true) {
-                System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
+
                 // Accept connections
                 connection = providerSocket.accept();
 
@@ -46,7 +49,7 @@ public class MasterNode {
                 in = new ObjectInputStream(connection.getInputStream());
 
                 int flag = (int) in.readInt(); // read the flag, so to know what to do
-                System.out.println("The server (Master node) is now open "+ flag);
+
                 if (flag == 0) { // insert node
 
                     insertNode(out,in);
@@ -69,41 +72,30 @@ public class MasterNode {
                 }else if(flag == 4) { // return the requested file to user
 
                     File requestedFile = (File)in.readObject();
-                    for(int i=0;i<catalogueOfNodes.size()-1;i++){
-
-                        catalogueOfNodes.get(i).counterForLookUp=false;
-                        System.out.print(catalogueOfNodes.get(i).counterForLookUp);
-
-                    }
 
                     //create a new request to menu to return the file
                     MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
                     mrt.start();
 
-                }
-                else if(flag == 5)//return a random node
-                {
-                    if(catalogueOfNodes.size()> 0)
-                    {
-                        out.writeObject(catalogueOfNodes.get(0));
-                        out.flush();
+                }else if(flag == 5){
+
+                    Node n= (Node) in.readObject();
+                   // catalogueOfNodes.remove(n);
+
+                    System.out.println("The size is : " + catalogueOfNodes.size());
+
+                    for (int i = 0; i < catalogueOfNodes.size(); i++) {
+                       if(catalogueOfNodes.get(i).getId()==n.getId()){
+                           catalogueOfNodes.remove(i);
+                       }
 
                     }
-                    else
-                    {
-                        out.writeObject(null);
-                        out.flush();
-                    }
-                    AddNodeToList((Node) in.readObject());
-                }
-                else if(flag == 8)//send to all node signal to update their tables
-                {
-                    MasterRequestThread a;
-                    for(int i=0;i<catalogueOfNodes.size()-1;i++){
 
-                        a = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 8);
-                        a.start();
+                    System.out.println("The size is : " + catalogueOfNodes.size());
 
+                    for (int i = 0; i < catalogueOfNodes.size(); i++) {
+                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 4);
+                        mrt.start();
                     }
                 }
             }
@@ -116,30 +108,6 @@ public class MasterNode {
                 ioException.printStackTrace();
             }
         }
-    }
-
-    void insertNode( ObjectOutputStream out, ObjectInputStream in) throws IOException, ClassNotFoundException {
-
-        // Read the node from the stream
-        Node n = (Node) in.readObject();
-        port = port + 1;
-
-        //set the port and id of the node
-        n.setPort(port);
-        // n.setId(catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId() + 1);
-
-       //AddNodeToList(n);
-
-        //send the node with the new port and id to the stream
-        out.writeObject(n);
-        out.flush();
-
-        //inform nodes that a node is inserted in system
-        //for (int i = 0; i < catalogueOfNodes.size(); i++) {
-        //    MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 0);
-       //     mrt.start();
-        //}
-
     }
 
     void AddNodeToList(Node n)
@@ -163,7 +131,40 @@ public class MasterNode {
         for (int i = 0; i < catalogueOfNodes.size(); i++) {
             System.out.println(catalogueOfNodes.get(i).toString());
         }
+
     }
 
+    void insertNode( ObjectOutputStream out, ObjectInputStream in) {
+
+        // Read the node from the stream
+
+        try {
+            Node n = null;
+            n = (Node) in.readObject();
+
+            port = port + 1;
+
+            //set the port and id of the node
+            n.setPort(port);
+            // n.setId(catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId() + 1);
+
+            AddNodeToList(n);
+
+            //send the node with the new port and id to the stream
+            out.writeObject(n);
+            out.flush();
+
+            //inform nodes that a node is inserted in system
+            for (int i = 0; i < catalogueOfNodes.size(); i++) {
+                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 0);
+                mrt.start();
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

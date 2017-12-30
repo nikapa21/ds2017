@@ -9,4 +9,5 @@ start cmd /k java Chord.Node 47
 start cmd /k java Chord.Node 48 
 start cmd /k java Chord.Node 51 
 start cmd /k java Chord.Node 56
+start cmd /k java Test.Menu
 REM start cmd /k java usernode.MobileService

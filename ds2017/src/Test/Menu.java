@@ -8,7 +8,7 @@ public class Menu {
     static final int SERVER_PORT = 7777;
     static int flag;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args)  {
 
         Scanner sc = new Scanner(System.in);
         int i;
@@ -74,7 +74,7 @@ public class Menu {
 
     }
 
-    private static void search(Scanner sc) throws InterruptedException {
+    private static void search(Scanner sc) {
 
         System.out.println("Please select the file you want to search and take");
 
@@ -89,6 +89,17 @@ public class Menu {
     }
 
     private static void exitApplication() {
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+               System.out.println("Exiting........");
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
 
         System.out.println("Thank you for visiting us!");
         System.exit(0);

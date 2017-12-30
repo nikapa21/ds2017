@@ -1,7 +1,6 @@
 package Master;
 
 import Chord.Node;
-
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -23,7 +22,11 @@ public class MasterActionForClients extends Thread {
     }
 
     public void run() {
+
         try {
+
+            System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
+
 
             if (flag2 == 0) { // finger table
 
@@ -78,25 +81,17 @@ public class MasterActionForClients extends Thread {
 
             } else if(flag2==2){ //search file
 
+                System.out.println("Received order from search action. Waiting for filename...");
                 File file = (File) in.readObject();
 
                 String sha1Hash = HashGenerator.generateSHA1(file.getName());// hash the name of file with sha1
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); //convert the hex to big int
                 fileKey = Math.abs(fileKey % 64);
 
-                for(int i=0;i<catalogueOfNodes.size()-1;i++){
-
-                    catalogueOfNodes.get(i).counterForLookUp=false;
-                    System.out.print(catalogueOfNodes.get(i).counterForLookUp);
-
-                }
-
                 MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), null, 2,fileKey);
                 mrt.start();
 
             }
-
-
 
         } catch (IOException e) {
             e.printStackTrace();

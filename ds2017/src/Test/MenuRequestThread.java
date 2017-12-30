@@ -13,6 +13,7 @@ public class MenuRequestThread extends Thread {
     int port;
     int flag ;
 
+
     public MenuRequestThread(File file, int port, int flag) {
 
         this.file = file;
@@ -31,11 +32,12 @@ public class MenuRequestThread extends Thread {
 
             // Create a socket to ip and to port 7777:
             requestSocket = new Socket("localhost", port);
-
+            System.out.println("menu request port"+port);
             // Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             in = new ObjectInputStream(requestSocket.getInputStream());
 
+            //First step is to send the flag to the Master- Which action we will take.
             out.writeInt(flag);
             out.flush();
 

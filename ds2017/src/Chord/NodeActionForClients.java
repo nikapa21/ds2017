@@ -11,8 +11,10 @@ public class NodeActionForClients extends Thread {
     int flag;
     Node n;
     ArrayList<Integer> fileKeys;
+    ArrayList<File> memory;
+    ArrayList<Integer> memoryKeys;
 
-    public NodeActionForClients(ObjectOutputStream out, ObjectInputStream in, ArrayList<File> files, int flag, Node n, ArrayList<Integer> fileKeys) {
+    public NodeActionForClients(ObjectOutputStream out, ObjectInputStream in, ArrayList<File> files, int flag, Node n, ArrayList<Integer> fileKeys,ArrayList<Integer> memoryKeys,ArrayList<File> memory) {
 
         this.out = out;
         this.in = in;
@@ -20,16 +22,8 @@ public class NodeActionForClients extends Thread {
         this.flag = flag;
         this.n = n;
         this.fileKeys = fileKeys;
-
-    }
-
-    public NodeActionForClients(ObjectOutputStream out, ObjectInputStream in, int flag, Node n) {
-
-        this.out = out;
-        this.in = in;
-        this.flag = flag;
-        this.n = n;
-
+        this.memoryKeys = memoryKeys;
+        this.memory = memory;
     }
 
     public void run() {
@@ -50,13 +44,57 @@ public class NodeActionForClients extends Thread {
 
                 int keyFile = in.readInt();
 
+                int counterForExistenceOfFile = in.readInt();
+
+                if (counterForExistenceOfFile>10){
+
+                    NodeRequestThread rt = new NodeRequestThread((File) null, 4);
+                    rt.start();
+
+                    return;
+                }
+
+                //first search in memory to find the file
+                for(int i =0;i<memory.size();i++)
+                {
+                    if(memoryKeys.get(i)==keyFile)
+                    {
+                        PrintDebug3();
+                        //return file found to menu
+                        NodeRequestThread rt = new NodeRequestThread(memory.get(i),4);
+                        rt.start();
+
+                        return;//file found
+
+                    }
+                }
+
+                //else search in disk
                 for (int i = 0; i < fileKeys.size(); i++) { //search if file is in this node
 
                     PrintDebug();
                     if(fileKeys.get(i)==keyFile) {
 
                         PrintDebug2();
-                        Node.counterForLookUp=false;
+
+                        if(memoryKeys.contains(keyFile))//last requested object added in the last position of the array
+                        {
+                            memoryKeys.remove(keyFile);
+                            memoryKeys.add(keyFile);
+                            memory.remove(fileKeys.get(i));
+                            memory.add(files.get(i));
+                        }
+
+                        if(memoryKeys.size() > 2)//delete oldest element from memory
+                        {
+
+                            memoryKeys.remove(0);
+                            memory.remove(0);
+                            PrintDebug5();
+                        }
+                        PrintDebug4();
+                        memoryKeys.add(keyFile);
+                        memory.add(files.get(i));
 
                         NodeRequestThread rt = new NodeRequestThread(files.get(i),4);
                         rt.start();
@@ -67,32 +105,9 @@ public class NodeActionForClients extends Thread {
 
                 }
 
-                n.lookUp(keyFile); //if file isn't in this node
 
-            }
-            else if (flag == 6) { //search for successor
+                n.lookUp(keyFile,counterForExistenceOfFile); //if file isn't in this node
 
-                Node successor = n.FindSuccessor2(in.readInt());
-                out.writeObject(successor);
-                out.flush();
-            }
-            else if (flag == 7) { //search for closest precending node
-
-                Node successor = n.ClosestPrecendingNode(in.readInt());
-                out.writeObject(successor);
-                out.flush();
-            }
-            else if (flag == 8) { //notify
-
-
-                Node n0 = (Node)in.readObject();
-                //System.out.println("Notify message from node "+n0.toString());
-                n.Notify(n0);
-            }
-            else if (flag == 9) { //return self
-                //Node n0 = (Node)in.readObject();
-                out.writeObject(n);
-                out.flush();
 
             }
 
@@ -134,5 +149,16 @@ public class NodeActionForClients extends Thread {
         System.out.println("found file ");
     }
 
+    void  PrintDebug3() {
+        System.out.println("found file in memory");
+    }
+
+    void  PrintDebug4() {
+        System.out.println("add file in memory");
+    }
+
+    void  PrintDebug5() {
+        System.out.println("remove file from memory");
+    }
 }
 

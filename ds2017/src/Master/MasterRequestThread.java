@@ -50,6 +50,7 @@ public class MasterRequestThread extends Thread {
 
             // Create a socket
             requestSocket = new Socket("localhost", port);
+            System.out.println("master request port"+port);
 
             // Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
@@ -76,13 +77,19 @@ public class MasterRequestThread extends Thread {
                 out.writeInt(fileKey);
                 out.flush();
 
+                //Counter of hops
+                out.writeInt(0);
+                out.flush();
+
             } else if (flag2 == 3) { // send the requested file back to user
 
                 out.writeObject(file);
                 out.flush();
 
+            } else if(flag2==4){
+                out.writeBoolean(false);
+                out.flush();
             }
-
 
         } catch (UnknownHostException unknownHost) {
             System.err.println("You are trying to connect to an unknown host!");
