@@ -29,10 +29,10 @@ public class Node implements Serializable {
 
     public static void main(String[] args) {
 
-        //int a = Integer.parseInt(args[0]); //get the id as parameter
+        int a = Integer.parseInt(args[0]); //get the id as parameter
 
         //create the node
-        Node n = new Node("localhost", 0, 1);
+        Node n = new Node("localhost", 0, a);
 
         flag = 0;
 
@@ -119,7 +119,7 @@ public class Node implements Serializable {
     }
 
     //look up for the file
-    public void lookUp(int fileKey, int counterForExistenceOfFile, InetAddress clientIp) {
+    public void lookUp(int fileKey, File file, int counterForExistenceOfFile, InetAddress clientIp) {
 
         counterForExistenceOfFile++;
 
@@ -133,7 +133,7 @@ public class Node implements Serializable {
 
                 System.out.println("request thread from node: " + fingerTable[i].getId());
 
-                NodeRequestThread rt = new NodeRequestThread(fingerTable[i], fileKey, 2,counterForExistenceOfFile, clientIp);
+                NodeRequestThread rt = new NodeRequestThread(fingerTable[i], fileKey, file, 2,counterForExistenceOfFile, clientIp);
                 rt.start();
 
                 return;
@@ -145,7 +145,7 @@ public class Node implements Serializable {
         System.out.println("no node found in the finger table");
 
         //if no such node found in the finger table look in the successor
-        NodeRequestThread rt = new NodeRequestThread(fingerTable[0], fileKey, 2,counterForExistenceOfFile, clientIp);
+        NodeRequestThread rt = new NodeRequestThread(fingerTable[0], fileKey, file, 2,counterForExistenceOfFile, clientIp);
         rt.start();
     }
 

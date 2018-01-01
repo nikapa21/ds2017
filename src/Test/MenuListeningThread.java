@@ -23,7 +23,7 @@ public class MenuListeningThread extends Thread {
 
         try {
 
-            System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
+            //System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
 
             // Create a socket
             providerSocket = new ServerSocket(7776);
@@ -41,9 +41,9 @@ public class MenuListeningThread extends Thread {
 
                 requestedFile = (FileEntry) in.readObject(); //read the requested file from server
 
-                if (requestedFile == null) {
+                if (requestedFile.getFileData() == null) {
 
-                    System.out.println("The file you want doesn't exist");
+                    System.out.println("The file " + requestedFile.getFile() + " doesn't exist");
                     //TODO find the file from the Google API
 
                 } else {

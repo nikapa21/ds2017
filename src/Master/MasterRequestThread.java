@@ -34,7 +34,7 @@ public class MasterRequestThread extends Thread {
 
     }
 
-    public MasterRequestThread(int port, File file, String fileData, int flag2, int fileKey, InetAddress clientIp) { //constructor 2
+    public MasterRequestThread(int port, File file, String fileData, int flag2, int fileKey, InetAddress clientIp) { //constructor 3
 
         this.port = port;
         this.file = file;
@@ -45,7 +45,7 @@ public class MasterRequestThread extends Thread {
 
     }
 
-    public MasterRequestThread(int port, File file, int flag2) { //constructor 3
+    public MasterRequestThread(int port, File file, int flag2) { //constructor 4
 
         this.port = port;
         this.file = file;
@@ -103,6 +103,9 @@ public class MasterRequestThread extends Thread {
             } else if (flag2 == 2) { // search file
 
                 out.writeInt(fileKey);
+                out.flush();
+
+                out.writeObject(file);
                 out.flush();
 
                 //Counter of hops

@@ -105,7 +105,7 @@ public class MasterActionForClients extends Thread {
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); //convert the hex to big int
                 fileKey = Math.abs(fileKey % 64);
 
-                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), null, 2,fileKey, clientIp);
+                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), file, 2, fileKey, clientIp);
                 mrt.start();
 
             }

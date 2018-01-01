@@ -55,7 +55,7 @@ public class NodeListeningThread extends Thread {
 
         try {
 
-            System.out.println("Number of active threads from the given thread: " + Thread.activeCount()); //debug
+            //System.out.println("Number of active threads from the given thread: " + Thread.activeCount()); //debug
 
             // Create a socket
             providerSocket = new ServerSocket(port, 100);

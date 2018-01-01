@@ -9,6 +9,7 @@ public class NodeRequestThread extends Thread {
     Node n;
     int i;
     int fileKey;
+    File file;
     FileEntry fileEntry;
     int counterForExistanceOfFile;
     InetAddress clientIp;
@@ -25,11 +26,12 @@ public class NodeRequestThread extends Thread {
         this.flag = flag;
     }
 
-    public NodeRequestThread(Node n, int fileKey, int flag,int counterForExistanceOfFile, InetAddress clientIp) {//constructor 3
+    public NodeRequestThread(Node n, int fileKey, File file, int flag,int counterForExistanceOfFile, InetAddress clientIp) {//constructor 3
 
         this.n = n;
         this.flag = flag;
         this.fileKey = fileKey;
+        this.file = file;
         this.counterForExistanceOfFile=counterForExistanceOfFile;
         this.clientIp = clientIp;
 
@@ -105,6 +107,9 @@ public class NodeRequestThread extends Thread {
 
                 System.out.println("sending search request " + n.toString());
                 out.writeInt(fileKey);
+                out.flush();
+
+                out.writeObject(file);
                 out.flush();
 
                 out.writeInt(counterForExistanceOfFile);
