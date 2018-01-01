@@ -1,5 +1,7 @@
 package Test;
 
+import Chord.FileEntry;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,7 +13,7 @@ public class MenuListeningThread extends Thread {
 
     ServerSocket providerSocket;
     Socket connection = null;
-    File requestedFile;
+    FileEntry requestedFile;
 
     @Override
     public void run() {
@@ -37,7 +39,7 @@ public class MenuListeningThread extends Thread {
 
                 int flag = in.readInt();
 
-                requestedFile = (File) in.readObject(); //read the requested file from server
+                requestedFile = (FileEntry) in.readObject(); //read the requested file from server
 
                 if (requestedFile == null) {
 

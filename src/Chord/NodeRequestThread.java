@@ -9,7 +9,7 @@ public class NodeRequestThread extends Thread {
     Node n;
     int i;
     int fileKey;
-    File file;
+    FileEntry fileEntry;
     int counterForExistanceOfFile;
     InetAddress clientIp;
 
@@ -35,14 +35,14 @@ public class NodeRequestThread extends Thread {
 
     }
 
-    public NodeRequestThread(File file, int flag, InetAddress clientIp) {//constructor 4
+    public NodeRequestThread(FileEntry file, int flag, InetAddress clientIp) {//constructor 4
 
-        this.file = file;
+        this.fileEntry = file;
         this.flag = flag;
         this.clientIp = clientIp;
 
-
     }
+
 
     //method to send to node the result
     public Node call() throws InterruptedException {
@@ -113,16 +113,10 @@ public class NodeRequestThread extends Thread {
                 out.writeObject(clientIp);
                 out.flush();
 
-            } else if (flag == 3) { // file to menu for testing
-                System.out.println("This should never happen ... ");
-                System.out.println("return file to menu " + file.getName());
-                out.writeObject(file);
-                out.flush();
-
             } else if (flag == 4) {//return file to menu
 
                 System.out.println("Sending the file back to the menu ");
-                out.writeObject(file);
+                out.writeObject(fileEntry);
                 out.flush();
 
             } else if(flag ==5 ){

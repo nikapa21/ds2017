@@ -7,11 +7,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class MenuRequestThread extends Thread {
 
     File file;
+    String fileData;
     int port;
     int flag ;
 
@@ -31,10 +31,18 @@ public class MenuRequestThread extends Thread {
         return ip;
     }
 
-
     public MenuRequestThread(File file, int port, int flag) {
 
         this.file = file;
+        this.port = port;
+        this.flag = flag;
+
+    }
+
+    public MenuRequestThread(File file, String fileData, int port, int flag) {
+
+        this.file = file;
+        this.fileData = fileData;
         this.port = port;
         this.flag = flag;
 
@@ -52,24 +60,23 @@ public class MenuRequestThread extends Thread {
             requestSocket = new Socket("localhost", port);
             //System.out.println("menu is opening a socket to the master node's port " + port);//debug
 
-            InetAddress myIp = findMyIp();/*
-            System.out.println("Menu has an IP " + myIp);//debug*/
+            InetAddress myIp = findMyIp();
+            //System.out.println("Menu has an IP " + myIp); debug
 
             // Get input and output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             in = new ObjectInputStream(requestSocket.getInputStream());
 
-            //First step is to send the flag to the Master- Which action we will take.
+            //First step is to send the flag to the Master - Which action we will take.
             out.writeInt(flag);
             out.flush();
 
-            if(flag==2){ // commit/save file
+            if(flag==2){ //commit-save file
 
                 out.writeObject(file);
+                out.writeObject(fileData);
                 out.writeObject(myIp);
                 out.flush();
-
-
 
             }
             else if(flag==3) { // search file

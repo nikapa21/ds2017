@@ -1,6 +1,6 @@
 package Test;
 
-import java.io.File;
+import java.io.*;
 import java.util.Scanner;
 
 public class Menu {
@@ -51,25 +51,47 @@ public class Menu {
 
     private static void commit(Scanner sc) {
 
-        System.out.println("Please commit the file, by the name, you want to save to the system");
+        System.out.print("Please commit the file, by the name, you want to save to the system ");
 
         String fileName = sc.next();
 
-        File file = new File(fileName);
+        File file = new File(fileName); // read the filename
+        BufferedReader reader = null; // to read the data of the file
+        String line; //for every line of the file
+        String fileData = "";//at first string is empty. TODO maybe this initialization is a workaround
 
-        while (!file.exists()) { // if the file doen't exist in directory
+        try {
+            reader = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException fnfex) {
 
-            System.out.println("The file doesn't exist! Please select a valid file name.");
-            fileName = sc.next();
-            file = new File(fileName);
+            while (!file.exists()) { // if the file doesn't exist in directory
 
+                System.out.println("The file doesn't exist! Please select a valid file name.");
+                fileName = sc.next();
+                file = new File(fileName);
+
+            }
+            try {
+                reader = new BufferedReader(new FileReader(file));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
+
+        try{// fill the fileData string with all contents of the file we read
+            while ((line = reader.readLine()) != null){
+                fileData += "\n" + line;
+            }
+
+        } catch (IOException ioex){
+            System.out.println(ioex.getMessage() + "Error reading file ");
+        }
+
+        System.out.println(fileData.toString()); //debug
 
         flag = 2;
 
-        System.out.println(file.toPath().toString()); //debug
-
-        MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT, flag);
+        MenuRequestThread mrt = new MenuRequestThread(file, fileData, SERVER_PORT, flag);//Here we pass the filename, the fileData, the server port and the flag action commit to the thread
         mrt.start();
 
     }

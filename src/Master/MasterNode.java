@@ -28,22 +28,21 @@ public class MasterNode {
 
     void openServer() {
 
-        System.out.println("The server (Master node) is now open");
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
 
         try {
-            System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
+            //System.out.println("Number of active threads from the given thread: " + Thread.activeCount()); //debug
 
             // Create a socket to port 7777
             providerSocket = new ServerSocket(port);
-            System.out.println("master node port" + port);
+
+            System.out.println("The server (Master node) is now open at port: " + port); //debug
 
             while (true) {
 
                 // Accept connections
                 connection = providerSocket.accept();
-
 
                 // Get input and output streams
                 out = new ObjectOutputStream(connection.getOutputStream());
@@ -129,10 +128,10 @@ public class MasterNode {
             }
         });
 
-        //print the nodes,for test
+        /*//print the nodes,for test
         for (int i = 0; i < catalogueOfNodes.size(); i++) {
             System.out.println(catalogueOfNodes.get(i).toString());
-        }
+        }*/
 
     }
 
@@ -156,10 +155,13 @@ public class MasterNode {
             out.writeObject(n);
             out.flush();
 
-            //inform nodes that a node is inserted in system
+            //inform all the other nodes that a node is inserted in system
             for (int i = 0; i < catalogueOfNodes.size(); i++) {
-                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 0);
-                mrt.start();
+                if (catalogueOfNodes.get(i).getId() != n.getId()) {
+                    System.out.println("informing the existing node " + catalogueOfNodes.get(i) + " about the new node:" + n);
+                    MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 0);
+                    mrt.start();
+                }
             }
         }catch (IOException e) {
             e.printStackTrace();

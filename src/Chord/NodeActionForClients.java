@@ -8,18 +8,18 @@ public class NodeActionForClients extends Thread {
 
     ObjectOutputStream out;
     ObjectInputStream in;
-    ArrayList<File> files;
+    ArrayList<FileEntry> fileEntries;
     int flag;
     Node n;
     ArrayList<Integer> fileKeys;
-    ArrayList<File> memory;
+    ArrayList<FileEntry> memory;
     ArrayList<Integer> memoryKeys;
 
-    public NodeActionForClients(ObjectOutputStream out, ObjectInputStream in, ArrayList<File> files, int flag, Node n, ArrayList<Integer> fileKeys,ArrayList<Integer> memoryKeys,ArrayList<File> memory) {
+    public NodeActionForClients(ObjectOutputStream out, ObjectInputStream in, ArrayList<FileEntry> files, int flag, Node n, ArrayList<Integer> fileKeys,ArrayList<Integer> memoryKeys,ArrayList<FileEntry> memory) {
 
         this.out = out;
         this.in = in;
-        this.files = files;
+        this.fileEntries = files;
         this.flag = flag;
         this.n = n;
         this.fileKeys = fileKeys;
@@ -34,8 +34,12 @@ public class NodeActionForClients extends Thread {
             if (flag == 1) { //commit(save) file
 
                 File file = (File) in.readObject();
-                files.add(file);
+                String fileData = (String) in.readObject();
+
+                fileEntries.add(new FileEntry(file, fileData));
                 printFiles();
+
+                System.out.println("The Node received a commit action and commited the following data \n" + fileData); //debug
 
                 int keyFile = in.readInt();
                 fileKeys.add(keyFile);
@@ -55,7 +59,8 @@ public class NodeActionForClients extends Thread {
 
                 if (counterForExistenceOfFile>10){
 
-                    NodeRequestThread rt = new NodeRequestThread((File) null, 4, clientIp);
+                    System.out.println("Could not find the file ");
+                    NodeRequestThread rt = new NodeRequestThread((FileEntry) null, 4, clientIp);
                     rt.start();
 
                     return;
@@ -68,7 +73,7 @@ public class NodeActionForClients extends Thread {
                     {
                         PrintDebug3();
                         //return the file found, directly back to the menu with client IP
-                        System.out.println("found keyfile in memory"+ keyFile);
+                        System.out.println("found keyfile in memory "+ keyFile);
                         NodeRequestThread rt = new NodeRequestThread(memory.get(i),4, clientIp);
                         rt.start();
 
@@ -84,13 +89,13 @@ public class NodeActionForClients extends Thread {
                     if(fileKeys.get(i)==keyFile) {
 
                         PrintDebug2();
-                        System.out.println("found keyfile in disk"+ keyFile);
+                        System.out.println("found keyfile in disk "+ keyFile);
                         if(memoryKeys.contains(keyFile))//last requested object added in the last position of the array
                         {
                             memoryKeys.remove(keyFile);
                             memoryKeys.add(keyFile);
                             memory.remove(fileKeys.get(i));
-                            memory.add(files.get(i));
+                            memory.add(fileEntries.get(i));
                         }
 
                         if(memoryKeys.size() > 2)//delete oldest element from memory
@@ -102,9 +107,9 @@ public class NodeActionForClients extends Thread {
                         }
                         PrintDebug4();
                         memoryKeys.add(keyFile);
-                        memory.add(files.get(i));
+                        memory.add(fileEntries.get(i));
 
-                        NodeRequestThread rt = new NodeRequestThread(files.get(i),4, clientIp);
+                        NodeRequestThread rt = new NodeRequestThread(fileEntries.get(i),4, clientIp);
                         rt.start();
 
                         return;
@@ -113,9 +118,7 @@ public class NodeActionForClients extends Thread {
 
                 }
 
-
-                n.lookUp(keyFile, counterForExistenceOfFile, clientIp); //if file isn't in this node
-
+                n.lookUp(keyFile, counterForExistenceOfFile, clientIp); //if file isn't in this node lookup somewhere else
 
             }
 
@@ -129,9 +132,9 @@ public class NodeActionForClients extends Thread {
 
     void printFiles() {
 
-        for (int i = 0; i < files.size(); i++) {
+        for (int i = 0; i < fileEntries.size(); i++) {
 
-            System.out.println(files.get(i).getName());
+            System.out.println(fileEntries.get(i).getFile().getName());
 
         }
 

@@ -31,7 +31,7 @@ public class NodeListeningThread extends Thread {
 
         for (int i = 0; i < n.files.size(); i++) {
 
-            System.out.println(n.files.get(i).getName());
+            System.out.println(n.files.get(i).getFile().getName());
 
         }
 
@@ -55,8 +55,7 @@ public class NodeListeningThread extends Thread {
 
         try {
 
-            System.out.println("Number of active threads from the given thread: " + Thread.activeCount());
-
+            System.out.println("Number of active threads from the given thread: " + Thread.activeCount()); //debug
 
             // Create a socket
             providerSocket = new ServerSocket(port, 100);
@@ -99,8 +98,9 @@ public class NodeListeningThread extends Thread {
                         n.calculateFinger();
                         n.printFinger();
                     }
-                } else if(flag==5){
-                    ArrayList<File>  ar = (ArrayList<File>) in.readObject();
+                } //graceful
+                    else if(flag==5){ //graceful failover
+                    ArrayList<FileEntry>  ar = (ArrayList<FileEntry>) in.readObject();
                     ArrayList<Integer> ar1 = (ArrayList<Integer>) in.readObject();
 
                     n.files.addAll(ar);
@@ -108,13 +108,27 @@ public class NodeListeningThread extends Thread {
                     printFiles();
                     printFilesKeys();
 
-                    ArrayList<File>  mem = (ArrayList<File>) in.readObject();
+                    ArrayList<FileEntry> mem = (ArrayList<FileEntry>) in.readObject();
                     ArrayList<Integer> memKeys = (ArrayList<Integer>) in.readObject();
 
                     n.memory.addAll(mem);
                     n.memoryKeys.addAll(memKeys);
                 }
 
+                /*out.writeInt(flag);
+                    out.flush();
+
+                    out.writeObject(n.files);
+                    out.flush();
+
+                    out.writeObject(n.filesKeys);
+                    out.flush();
+
+                    out.writeObject(n.memory);
+                    out.flush();
+
+                    out.writeObject(n.memoryKeys);
+                    out.flush();*/
             }
         } catch (IOException ioException) {
             ioException.printStackTrace();
