@@ -158,7 +158,6 @@ public class MasterNode {
             //inform all the other nodes that a node is inserted in system
             for (int i = 0; i < catalogueOfNodes.size(); i++) {
                 if (catalogueOfNodes.get(i).getId() != n.getId()) {
-                    System.out.println("informing the existing node " + catalogueOfNodes.get(i) + " about the new node:" + n);
                     MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), 0);
                     mrt.start();
                 }

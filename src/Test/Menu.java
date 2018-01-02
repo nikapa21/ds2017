@@ -1,5 +1,7 @@
 package Test;
 
+import Chord.FileEntry;
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -105,7 +107,14 @@ public class Menu {
 
         flag = 3;
 
-        MenuRequestThread mrt = new MenuRequestThread(file, SERVER_PORT, flag);
+        String origin = "A";
+        String destination = "B";
+
+        FileEntry fileEntry = new FileEntry(file, null, origin, destination);
+
+        flag = 3;
+
+        MenuRequestThread mrt = new MenuRequestThread(fileEntry, SERVER_PORT, flag);
         mrt.start();
 
     }

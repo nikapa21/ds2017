@@ -7,16 +7,39 @@ public class FileEntry implements Serializable{
 
     File file;
     String fileData;
-
+    String origin;
+    String destination;
 
     public FileEntry(File file, String fileData) {
         this.file = file;
         this.fileData = fileData;
     }
 
+    public FileEntry(File file, String fileData, String origin, String destination) {
+        this.file = file;
+        this.fileData = fileData;
+        this.origin=origin;
+        this.destination=destination;
+    }
 
     public File getFile() {
         return file;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 
     public void setFile(File file) {

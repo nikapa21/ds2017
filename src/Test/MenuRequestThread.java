@@ -1,5 +1,7 @@
 package Test;
 
+import Chord.FileEntry;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,25 +12,18 @@ import java.net.InetAddress;
 
 public class MenuRequestThread extends Thread {
 
+    FileEntry fileEntry;
     File file;
     String fileData;
     int port;
-    int flag ;
+    int flag;
 
-    private InetAddress findMyIp(){
-        InetAddress ip = null;
-        String hostname;
-        try {
-            ip = InetAddress.getLocalHost();/*
-            hostname = ip.getHostName();*//*
-            System.out.println("Your current IP address : " + ip);
-            System.out.println("Your current Hostname : " + hostname);*/
+    public MenuRequestThread(FileEntry fileEntry, int port, int flag) {
 
-        } catch (UnknownHostException e) {
+        this.fileEntry = fileEntry;
+        this.port = port;
+        this.flag = flag;
 
-            e.printStackTrace();
-        }
-        return ip;
     }
 
     public MenuRequestThread(File file, int port, int flag) {
@@ -46,6 +41,22 @@ public class MenuRequestThread extends Thread {
         this.port = port;
         this.flag = flag;
 
+    }
+
+    private InetAddress findMyIp(){
+        InetAddress ip = null;
+        String hostname;
+        try {
+            ip = InetAddress.getLocalHost();/*
+            hostname = ip.getHostName();*//*
+            System.out.println("Your current IP address : " + ip);
+            System.out.println("Your current Hostname : " + hostname);*/
+
+        } catch (UnknownHostException e) {
+
+            e.printStackTrace();
+        }
+        return ip;
     }
 
     public void run() {
@@ -81,7 +92,7 @@ public class MenuRequestThread extends Thread {
             }
             else if(flag==3) { // search file
 
-                out.writeObject(file);
+                out.writeObject(fileEntry);
                 out.writeObject(myIp);
                 out.flush();
 

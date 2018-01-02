@@ -17,13 +17,12 @@ public class NodeListeningThread extends Thread {
     Node n;
     boolean a;
 
-
     public NodeListeningThread(int port, int id, Node n) {
 
         this.port = port;
         this.id = id;
         this.n = n;
-        System.out.println(port); //for debug
+        //System.out.println(port); //for debug
 
     }
 
@@ -130,6 +129,7 @@ public class NodeListeningThread extends Thread {
                     out.writeObject(n.memoryKeys);
                     out.flush();*/
             }
+
         } catch (IOException ioException) {
             ioException.printStackTrace();
         } catch (ClassNotFoundException e) {

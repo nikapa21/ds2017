@@ -18,10 +18,16 @@ public class Node implements Serializable {
     ArrayList<FileEntry> memory = new ArrayList<FileEntry>();
     ArrayList<Integer> memoryKeys = new ArrayList<Integer>();
 
+    public Node(String addr, int id) {
+
+        this.addr = addr;
+        this.id = id;
+
+    }
+
     public Node(String addr, int port, int id) {
 
         this.addr = addr;
-
         this.port = port;
         this.id = id;
 
@@ -46,7 +52,6 @@ public class Node implements Serializable {
         try {
             n = rt.call();
 
-
             //wait until the thread finished
             rt.join();
 
@@ -66,11 +71,12 @@ public class Node implements Serializable {
         Node finalN = n;
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
-              gracefulFailover(finalN);
+                gracefulFailover(finalN);
             }
         }));
 
     }
+
 
     //calculate successor
     public int findSuccessor(int id, int i) {
@@ -119,21 +125,22 @@ public class Node implements Serializable {
     }
 
     //look up for the file
-    public void lookUp(int fileKey, File file, int counterForExistenceOfFile, InetAddress clientIp) {
+    public void lookUp(int fileKey, FileEntry fileEntry, int counterForExistenceOfFile, InetAddress clientIp) {
+
 
         counterForExistenceOfFile++;
 
-        System.out.println("inside lookup"); //debug
+        System.out.println("inside lookup. Number of hops " + counterForExistenceOfFile + " and FileKey " + fileKey); //debug
 
         for (int i = fingerTable.length - 1; i >= 0; i--) { //looking in finger table for a node id <= filekey
 
             System.out.println("inside lookup for ,node: " + fingerTable[i].getId());
 
-            if (fileKey >= fingerTable[i].getId()) {
+            if (fileKey >= fingerTable[i].getId() && fingerTable[i].getId() > id) {
 
                 System.out.println("request thread from node: " + fingerTable[i].getId());
 
-                NodeRequestThread rt = new NodeRequestThread(fingerTable[i], fileKey, file, 2,counterForExistenceOfFile, clientIp);
+                NodeRequestThread rt = new NodeRequestThread(fingerTable[i], fileKey, fileEntry, 2, counterForExistenceOfFile, clientIp);
                 rt.start();
 
                 return;
@@ -145,7 +152,7 @@ public class Node implements Serializable {
         System.out.println("no node found in the finger table");
 
         //if no such node found in the finger table look in the successor
-        NodeRequestThread rt = new NodeRequestThread(fingerTable[0], fileKey, file, 2,counterForExistenceOfFile, clientIp);
+        NodeRequestThread rt = new NodeRequestThread(fingerTable[0], fileKey, fileEntry, 2,counterForExistenceOfFile, clientIp);
         rt.start();
     }
 

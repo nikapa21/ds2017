@@ -43,12 +43,13 @@ public class MenuListeningThread extends Thread {
 
                 if (requestedFile.getFileData() == null) {
 
-                    System.out.println("The file " + requestedFile.getFile() + " doesn't exist");
+                    System.out.println("The file " + requestedFile.getFile() + " with origin " + requestedFile.getOrigin() + " and destination " + requestedFile.getDestination() + " doesn't exist");
                     //TODO find the file from the Google API
 
                 } else {
 
                     System.out.println("The requested file is: " + requestedFile);
+                    System.out.println("The requested file name is: " + requestedFile.getFile().getName());
                     //We have the file, no need for Google API
                 }
                 //TODO Render the route

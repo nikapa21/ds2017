@@ -1,5 +1,7 @@
 package Master;
 
+import Chord.FileEntry;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,6 +14,7 @@ public class MasterRequestThread extends Thread {
 
     int port;
     File file;
+    FileEntry fileEntry;
     String fileData;
     int flag2;
     int fileKey;
@@ -24,10 +27,10 @@ public class MasterRequestThread extends Thread {
 
     }
 
-    public MasterRequestThread(int port, File file, int flag2, int fileKey, InetAddress clientIp) { //constructor 2
+    public MasterRequestThread(int port, FileEntry fileEntry, int flag2, int fileKey, InetAddress clientIp) { //constructor 2
 
         this.port = port;
-        this.file = file;
+        this.fileEntry = fileEntry;
         this.flag2 = flag2;
         this.fileKey = fileKey;
         this.clientIp = clientIp;
@@ -60,11 +63,9 @@ public class MasterRequestThread extends Thread {
         ObjectInputStream in = null;
         String chordNodeIP = "localhost";
         int chordNodePort = port;
-        long timestamp = System.currentTimeMillis();
 
         try {
 
-            System.out.println("1master opens a socket (flag2:"+flag2+", timestamp:"+timestamp+") to the node with port " + chordNodePort); //debug
             //System.out.println("master sends flag action " + flag2); //debug
             //System.out.println("master forwards client IP " + clientIp); //debug
 
@@ -75,13 +76,11 @@ public class MasterRequestThread extends Thread {
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             in = new ObjectInputStream(requestSocket.getInputStream());
 
-            System.out.println("++++++++++master sends the flag(flag2:"+flag2+", timestamp:"+timestamp+")  to the node with port " + chordNodePort);
             out.writeInt(flag2); // the master sends the flag to the node
             out.flush();
 
             if (flag2 == 0) { // to inform nodes that a new node is on system
 
-                System.out.println("++++++++++master sends the boolean true (flag2:"+flag2+", timestamp:"+timestamp+")  to the node with port " + chordNodePort);
 
                 out.writeBoolean(true);
                 out.flush();
@@ -102,10 +101,12 @@ public class MasterRequestThread extends Thread {
 
             } else if (flag2 == 2) { // search file
 
+                System.out.println("Assigning the search to node with port " + chordNodePort);
+
                 out.writeInt(fileKey);
                 out.flush();
 
-                out.writeObject(file);
+                out.writeObject(fileEntry);
                 out.flush();
 
                 //Counter of hops
@@ -128,7 +129,6 @@ public class MasterRequestThread extends Thread {
         } catch (UnknownHostException unknownHost) {
             System.err.println("You are trying to connect to an unknown host!");
         } catch (Exception ioException) {
-            System.out.println("Something general went wrong when master opens a socket (flag2:"+flag2+", timestamp:"+timestamp+")  to the node with port " + chordNodePort); //debug
             ioException.printStackTrace();
         } finally {
             try {
@@ -136,7 +136,6 @@ public class MasterRequestThread extends Thread {
                 out.close();
                 requestSocket.close();
             } catch (Exception ioException) {
-                System.out.println("Something went wrong when master opens a socket (flag2:"+flag2+", timestamp:"+timestamp+")  to the node with port " + chordNodePort); //debug
                 ioException.printStackTrace();
 
             }

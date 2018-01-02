@@ -26,20 +26,20 @@ public class NodeRequestThread extends Thread {
         this.flag = flag;
     }
 
-    public NodeRequestThread(Node n, int fileKey, File file, int flag,int counterForExistanceOfFile, InetAddress clientIp) {//constructor 3
+    public NodeRequestThread(Node n, int fileKey, FileEntry fileEntry, int flag,int counterForExistanceOfFile, InetAddress clientIp) {//constructor 3
 
         this.n = n;
         this.flag = flag;
         this.fileKey = fileKey;
-        this.file = file;
+        this.fileEntry = fileEntry;
         this.counterForExistanceOfFile=counterForExistanceOfFile;
         this.clientIp = clientIp;
 
     }
 
-    public NodeRequestThread(FileEntry file, int flag, InetAddress clientIp) {//constructor 4
+    public NodeRequestThread(FileEntry fileEntry, int flag, InetAddress clientIp) {//constructor 4
 
-        this.fileEntry = file;
+        this.fileEntry = fileEntry;
         this.flag = flag;
         this.clientIp = clientIp;
 
@@ -109,7 +109,7 @@ public class NodeRequestThread extends Thread {
                 out.writeInt(fileKey);
                 out.flush();
 
-                out.writeObject(file);
+                out.writeObject(fileEntry);
                 out.flush();
 
                 out.writeInt(counterForExistanceOfFile);

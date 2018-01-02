@@ -1,5 +1,6 @@
 package Master;
 
+import Chord.FileEntry;
 import Chord.Node;
 
 import java.io.*;
@@ -73,6 +74,7 @@ public class MasterActionForClients extends Thread {
 
                 String sha1Hash = HashGenerator.generateSHA1(file.getName()); //hash the name of file
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); // convert hex to int
+                System.out.println("dangerously converting fileKey "+fileKey+ " to "+ Math.abs(fileKey % 64));
                 fileKey = Math.abs(fileKey % 64);
 
                 for (int i = 0; i < catalogueOfNodes.size(); i++) { //send the file in the correct(by id) node
@@ -96,16 +98,17 @@ public class MasterActionForClients extends Thread {
             } else if(flag2==2){ //search file
 
                 System.out.println("Received order from search action. Waiting for filename...");
-                File file = (File) in.readObject();//read the file
+                FileEntry fileEntry = (FileEntry) in.readObject();//read the file
+
+                File file = fileEntry.getFile();
 
                 InetAddress clientIp = (InetAddress) in.readObject();//read the requesting IP
-                System.out.println("Received a commit request from client IP " + clientIp);
 
                 String sha1Hash = HashGenerator.generateSHA1(file.getName());// hash the name of file with sha1
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); //convert the hex to big int
-                fileKey = Math.abs(fileKey % 64);
+                //fileKey = Math.abs(fileKey % 64);
 
-                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), file, 2, fileKey, clientIp);
+                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), fileEntry, 2, fileKey, clientIp);
                 mrt.start();
 
             }

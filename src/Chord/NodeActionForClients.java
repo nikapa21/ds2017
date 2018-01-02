@@ -35,7 +35,10 @@ public class NodeActionForClients extends Thread {
 
                 File file = (File) in.readObject();
                 String fileData = (String) in.readObject();
-
+/*
+                String origin = (String) in.readObject();
+                String destination = (String) in.readObject();
+*/
                 fileEntries.add(new FileEntry(file, fileData));
                 printFiles();
 
@@ -51,7 +54,11 @@ public class NodeActionForClients extends Thread {
             } else if (flag == 2) { //search file
 
                 int keyFile = in.readInt();
-                File file = (File) in.readObject();
+                FileEntry fileEntry = (FileEntry) in.readObject();
+
+                File file = fileEntry.getFile();
+                String origin = fileEntry.getOrigin();
+                String destination = fileEntry.getDestination();
 
                 int counterForExistenceOfFile = in.readInt();
 
@@ -61,7 +68,7 @@ public class NodeActionForClients extends Thread {
                 if (counterForExistenceOfFile>10){
 
                     System.out.println("Could not find the file ");
-                    NodeRequestThread rt = new NodeRequestThread(new FileEntry(file, null) , 4, clientIp);
+                    NodeRequestThread rt = new NodeRequestThread(new FileEntry(file, null, origin, destination) , 4, clientIp);
                     rt.start();
 
                     return;
@@ -119,7 +126,7 @@ public class NodeActionForClients extends Thread {
 
                 }
 
-                n.lookUp(keyFile, file, counterForExistenceOfFile, clientIp); //if file isn't in this node lookup somewhere else
+                n.lookUp(keyFile, fileEntry, counterForExistenceOfFile, clientIp); //if file isn't in this node lookup somewhere else
 
             }
 
