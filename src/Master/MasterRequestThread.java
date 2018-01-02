@@ -2,8 +2,6 @@ package Master;
 
 import Chord.FileEntry;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -13,9 +11,8 @@ import java.net.UnknownHostException;
 public class MasterRequestThread extends Thread {
 
     int port;
-    File file;
+
     FileEntry fileEntry;
-    String fileData;
     int flag2;
     int fileKey;
     InetAddress clientIp;
@@ -34,25 +31,6 @@ public class MasterRequestThread extends Thread {
         this.flag2 = flag2;
         this.fileKey = fileKey;
         this.clientIp = clientIp;
-
-    }
-
-    public MasterRequestThread(int port, File file, String fileData, int flag2, int fileKey, InetAddress clientIp) { //constructor 3
-
-        this.port = port;
-        this.file = file;
-        this.fileData = fileData;
-        this.flag2 = flag2;
-        this.fileKey = fileKey;
-        this.clientIp = clientIp;
-
-    }
-
-    public MasterRequestThread(int port, File file, int flag2) { //constructor 4
-
-        this.port = port;
-        this.file = file;
-        this.flag2 = flag2;
 
     }
 
@@ -87,10 +65,7 @@ public class MasterRequestThread extends Thread {
 
             } else if (flag2 == 1) { // commit(save) file
 
-                out.writeObject(file); // send the file name
-                out.flush();
-
-                out.writeObject(fileData);
+                out.writeObject(fileEntry); // send the file name
                 out.flush();
 
                 out.writeInt(fileKey); // send the key
@@ -114,11 +89,6 @@ public class MasterRequestThread extends Thread {
                 out.flush();
 
                 out.writeObject(clientIp);
-                out.flush();
-
-            } else if (flag2 == 3) { // send the requested file back to user
-
-                out.writeObject(file);
                 out.flush();
 
             } else if(flag2==4){

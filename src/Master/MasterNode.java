@@ -69,16 +69,7 @@ public class MasterNode {
                     MasterActionForClients a = new MasterActionForClients(catalogueOfNodes,out,in,2);
                     a.start();
 
-                }else if(flag == 4) { // return the requested file to user
-
-                    File requestedFile = (File)in.readObject();
-
-                    //create a new request to menu to return the file
-                    System.out.println("This should never happen because the nodes return the file directly to menu ");
-                    MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
-                    mrt.start();
-
-                }else if(flag == 5){
+                } else if(flag == 5){
 
                     Node n= (Node) in.readObject();
                    // catalogueOfNodes.remove(n);

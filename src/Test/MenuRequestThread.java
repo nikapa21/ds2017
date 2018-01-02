@@ -13,31 +13,13 @@ import java.net.InetAddress;
 public class MenuRequestThread extends Thread {
 
     FileEntry fileEntry;
-    File file;
-    String fileData;
+
     int port;
     int flag;
 
     public MenuRequestThread(FileEntry fileEntry, int port, int flag) {
 
         this.fileEntry = fileEntry;
-        this.port = port;
-        this.flag = flag;
-
-    }
-
-    public MenuRequestThread(File file, int port, int flag) {
-
-        this.file = file;
-        this.port = port;
-        this.flag = flag;
-
-    }
-
-    public MenuRequestThread(File file, String fileData, int port, int flag) {
-
-        this.file = file;
-        this.fileData = fileData;
         this.port = port;
         this.flag = flag;
 
@@ -84,8 +66,7 @@ public class MenuRequestThread extends Thread {
 
             if(flag==2){ //commit-save file
 
-                out.writeObject(file);
-                out.writeObject(fileData);
+                out.writeObject(fileEntry);
                 out.writeObject(myIp);
                 out.flush();
 

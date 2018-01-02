@@ -61,6 +61,8 @@ public class Menu {
         BufferedReader reader = null; // to read the data of the file
         String line; //for every line of the file
         String fileData = "";//at first string is empty. TODO maybe this initialization is a workaround
+        String origin = "A";// dummy for menu purposes
+        String destination = "B";// dummy for menu purposes
 
         try {
             reader = new BufferedReader(new FileReader(file));
@@ -93,7 +95,7 @@ public class Menu {
 
         flag = 2;
 
-        MenuRequestThread mrt = new MenuRequestThread(file, fileData, SERVER_PORT, flag);//Here we pass the filename, the fileData, the server port and the flag action commit to the thread
+        MenuRequestThread mrt = new MenuRequestThread(new FileEntry(file, fileData, origin, destination), SERVER_PORT, flag);//Here we pass the filename, the fileData, the server port and the flag action commit to the thread
         mrt.start();
 
     }

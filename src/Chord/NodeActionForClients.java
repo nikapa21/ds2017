@@ -33,16 +33,11 @@ public class NodeActionForClients extends Thread {
 
             if (flag == 1) { //commit(save) file
 
-                File file = (File) in.readObject();
-                String fileData = (String) in.readObject();
-/*
-                String origin = (String) in.readObject();
-                String destination = (String) in.readObject();
-*/
-                fileEntries.add(new FileEntry(file, fileData));
+                FileEntry fileEntry = (FileEntry) in.readObject();
+                fileEntries.add(fileEntry);
                 printFiles();
 
-                System.out.println("The Node received a commit action and commited the following data \n" + fileData); //debug
+                System.out.println("The Node received a commit action and commited the following data \n" + fileEntry.getFileData()); //debug
 
                 int keyFile = in.readInt();
                 fileKeys.add(keyFile);
