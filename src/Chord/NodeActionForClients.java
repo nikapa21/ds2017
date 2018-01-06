@@ -35,16 +35,15 @@ public class NodeActionForClients extends Thread {
 
                 FileEntry fileEntry = (FileEntry) in.readObject();
                 fileEntries.add(fileEntry);
-                printFiles();
 
-                System.out.println("The Node received a commit action and commited the following data \n" + fileEntry.getFileData()); //debug
+                System.out.println("###############\n"+"The Node received a commit action and commited file " + fileEntry.getFile().getName() +
+                        " containing the following data \n" + fileEntry.getFileData()+"\n###############\n"); //debug
 
                 int keyFile = in.readInt();
                 fileKeys.add(keyFile);
                 printFilesKeys();
 
                 InetAddress clientIp = (InetAddress) in.readObject();
-                System.out.println("The Node receive a flag action " + flag + " initially ordered by the client IP " + clientIp); //debug
 
             } else if (flag == 2) { //search file
 
@@ -58,7 +57,7 @@ public class NodeActionForClients extends Thread {
                 int counterForExistenceOfFile = in.readInt();
 
                 InetAddress clientIp = (InetAddress) in.readObject();
-                System.out.println("The Node receive a flag action " + flag + " initially ordered by the client IP " + clientIp); //debug
+                System.out.println("The Node received a search action initially ordered by the client IP " + clientIp); //debug
 
                 if (counterForExistenceOfFile>10){
 
@@ -76,7 +75,7 @@ public class NodeActionForClients extends Thread {
                     {
                         PrintDebug3();
                         //return the file found, directly back to the menu with client IP
-                        System.out.println("found keyfile in memory "+ keyFile);
+                        System.out.println("Found in memory with keyfile: "+ keyFile);
                         NodeRequestThread rt = new NodeRequestThread(memory.get(i),4, clientIp);
                         rt.start();
 
@@ -92,7 +91,7 @@ public class NodeActionForClients extends Thread {
                     if(fileKeys.get(i)==keyFile) {
 
                         PrintDebug2();
-                        System.out.println("found keyfile in disk "+ keyFile);
+                        System.out.println("Found in disk with keyfile: "+ keyFile);
                         if(memoryKeys.contains(keyFile))//last requested object added in the last position of the array
                         {
                             memoryKeys.remove(keyFile);
@@ -133,7 +132,7 @@ public class NodeActionForClients extends Thread {
 
     }
 
-    void printFiles() {
+    /*void printFiles() {
 
         for (int i = 0; i < fileEntries.size(); i++) {
 
@@ -141,13 +140,13 @@ public class NodeActionForClients extends Thread {
 
         }
 
-    }
+    }*/
 
     void printFilesKeys() {
 
         for (int i = 0; i < fileKeys.size(); i++) {
 
-            System.out.println("the size is " + fileKeys.size());
+            System.out.println("The size is " + fileKeys.size());
             System.out.println("Filekeys " + fileKeys.get(i));
 
         }
@@ -156,23 +155,23 @@ public class NodeActionForClients extends Thread {
 
     void  PrintDebug()
     {
-        System.out.println("searching files ");
+        System.out.println("Searching file ");
     }
 
     void  PrintDebug2() {
-        System.out.println("found file ");
+        System.out.println("Found file ");
     }
 
     void  PrintDebug3() {
-        System.out.println("found file in memory");
+        System.out.println("Found file in memory ");
     }
 
     void  PrintDebug4() {
-        System.out.println("add file in memory");
+        System.out.println("Add file in memory ");
     }
 
     void  PrintDebug5() {
-        System.out.println("remove file from memory");
+        System.out.println("Remove file from memory ");
     }
 }
 

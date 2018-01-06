@@ -85,8 +85,8 @@ public class MenuRequestThread extends Thread {
             ioException.printStackTrace();
         } finally {
             try {
-                in.close();
-                out.close();
+                /*in.close();
+                out.close();*/
                 requestSocket.close();
             } catch (IOException ioException) {
                 ioException.printStackTrace();

@@ -35,10 +35,10 @@ public class Node implements Serializable {
 
     public static void main(String[] args) {
 
-        int a = Integer.parseInt(args[0]); //get the id as parameter
+        //int a = Integer.parseInt(args[0]); //get the id as parameter
 
         //create the node
-        Node n = new Node("localhost", 0, a);
+        Node n = new Node("localhost", 0, 37);
 
         flag = 0;
 
@@ -93,7 +93,7 @@ public class Node implements Serializable {
 
             int j = findSuccessor(this.id, i);
             j = (int) (j % Math.pow(2, m));
-            System.out.println("Node "+id+" asks the master about node "+j+"while calculating finger table");
+            System.out.println("Node " + id + " asks the master about node " + j + " while calculating finger table");
 
             NodeRequestThread rft = new NodeRequestThread(j, flag);
 
@@ -111,7 +111,7 @@ public class Node implements Serializable {
             }
 
         }
-        System.out.println("finger table of Node"+id+" is "+fingerTable);
+        System.out.println("Finger table of Node " + id + " is "+fingerTable);
     }
 
     public static void gracefulFailover(Node n){

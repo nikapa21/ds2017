@@ -65,12 +65,10 @@ public class MasterActionForClients extends Thread {
 
                 FileEntry fileEntry = (FileEntry) in.readObject(); //read the file
 
-                //String fileData = (String) in.readObject(); //read the file data
-                System.out.println("The commited file contains following data" + fileEntry.getFileData() +"\n"); //debug
-
                 InetAddress clientIp = (InetAddress) in.readObject();//read the requesting IP
                 System.out.println("Received a commit request from client IP " + clientIp);
-
+                //String fileData = (String) in.readObject(); //read the file data
+                System.out.println("The commited file contains following data" + fileEntry.getFileData() +"\n"); //debug
 
                 String sha1Hash = HashGenerator.generateSHA1(fileEntry.getFile().getName()); //hash the name of file
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); // convert hex to int
@@ -97,12 +95,12 @@ public class MasterActionForClients extends Thread {
 
             } else if(flag2==2){ //search file
 
-                System.out.println("Received order from search action. Waiting for filename...");
                 FileEntry fileEntry = (FileEntry) in.readObject();//read the file
 
                 File file = fileEntry.getFile();
 
                 InetAddress clientIp = (InetAddress) in.readObject();//read the requesting IP
+                System.out.println("Received order from search action. From client IP:" + clientIp);
 
                 String sha1Hash = HashGenerator.generateSHA1(file.getName());// hash the name of file with sha1
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); //convert the hex to big int

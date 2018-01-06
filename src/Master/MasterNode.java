@@ -1,5 +1,6 @@
 package Master;
 
+import Chord.FileEntry;
 import Chord.Node;
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +69,15 @@ public class MasterNode {
 
                     MasterActionForClients a = new MasterActionForClients(catalogueOfNodes,out,in,2);
                     a.start();
+
+                } else if (flag == 4) { // receive the requested file from node and sending back to user
+
+                    FileEntry requestedFile = (FileEntry) in.readObject();
+                    System.out.println("Received the requested file from node " );
+
+                    //create a new request to menu to return the file
+                    MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
+                    mrt.start();
 
                 } else if(flag == 5){
 

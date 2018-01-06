@@ -67,9 +67,10 @@ public class NodeRequestThread extends Thread {
 
                 requestSocket = new Socket("localhost", n.getPort());
 
-            } else if (flag == 4) { //send to menu
+            } else if (flag == 4) { //send to master node and he will send to menu
 
-                requestSocket = new Socket(clientIp, 7776);
+                //System.out.println("Sending back to Client IP: " + clientIp);
+                requestSocket = new Socket(clientIp, 7777);
 
             } else { //send to server
 
@@ -92,7 +93,7 @@ public class NodeRequestThread extends Thread {
                 n = (Node) in.readObject(); //read the initialized node
 
                 //this is for test
-                System.out.println("Result from Server>" + n.toString());
+                System.out.println("Result from Server > " + n.toString());
 
             } else if (flag == 1) { // for finger table
 
@@ -101,7 +102,7 @@ public class NodeRequestThread extends Thread {
 
                 n = (Node) in.readObject();
 
-                System.out.println("flag =1>" + n.toString());
+                System.out.println("flag = 1 > " + n.toString());
 
             } else if (flag == 2) { //search
 
@@ -120,7 +121,7 @@ public class NodeRequestThread extends Thread {
 
             } else if (flag == 4) {//return file to menu
 
-                System.out.println("Sending the file back to the menu ");
+                System.out.println("Sending reply to master and from there back to the menu with client IP: " + clientIp);
                 out.writeObject(fileEntry);
                 out.flush();
 
@@ -158,8 +159,8 @@ public class NodeRequestThread extends Thread {
             ioException.printStackTrace();
         } finally {
             try {
-                in.close();
-                out.close();
+                /*in.close();
+                out.close();*/
                 requestSocket.close();
             } catch (IOException ioException) {
                 ioException.printStackTrace();

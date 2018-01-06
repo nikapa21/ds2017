@@ -24,6 +24,14 @@ public class MasterRequestThread extends Thread {
 
     }
 
+    public MasterRequestThread(int port, FileEntry fileEntry, int flag2) { //constructor 2
+
+        this.port = port;
+        this.fileEntry = fileEntry;
+        this.flag2 = flag2;
+
+    }
+
     public MasterRequestThread(int port, FileEntry fileEntry, int flag2, int fileKey, InetAddress clientIp) { //constructor 2
 
         this.port = port;
@@ -91,6 +99,12 @@ public class MasterRequestThread extends Thread {
                 out.writeObject(clientIp);
                 out.flush();
 
+            }else if (flag2 == 3) { // send the requested file back to user
+
+                System.out.println("Sending the requested file from Master back to user " );
+                out.writeObject(fileEntry);
+                out.flush();
+
             } else if(flag2==4){
                 out.writeBoolean(false);
                 out.flush();
@@ -102,8 +116,8 @@ public class MasterRequestThread extends Thread {
             ioException.printStackTrace();
         } finally {
             try {
-                in.close();
-                out.close();
+                /*in.close();
+                out.close();*/
                 requestSocket.close();
             } catch (Exception ioException) {
                 ioException.printStackTrace();
