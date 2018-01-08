@@ -45,7 +45,6 @@ public class NodeRequestThread extends Thread {
 
     }
 
-
     //method to send to node the result
     public Node call() throws InterruptedException {
 
@@ -70,7 +69,7 @@ public class NodeRequestThread extends Thread {
             } else if (flag == 4) { //send to master node and he will send to menu
 
                 //System.out.println("Sending back to Client IP: " + clientIp);
-                requestSocket = new Socket(clientIp, 7777);
+                requestSocket = new Socket("localhost", 7777);
 
             } else { //send to server
 
@@ -159,8 +158,8 @@ public class NodeRequestThread extends Thread {
             ioException.printStackTrace();
         } finally {
             try {
-                /*in.close();
-                out.close();*/
+                in.close();
+                out.close();
                 requestSocket.close();
             } catch (IOException ioException) {
                 ioException.printStackTrace();

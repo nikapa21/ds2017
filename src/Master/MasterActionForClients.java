@@ -2,18 +2,21 @@ package Master;
 
 import Chord.FileEntry;
 import Chord.Node;
+import Test.Waiter;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.*;
 
-public class MasterActionForClients extends Thread {
+public class MasterActionForClients extends Thread{
 
     ObjectOutputStream out;
     ObjectInputStream in;
     ArrayList<Node> catalogueOfNodes;
     int flag2;
+    //FileEntry requestedFile;
+    Waiter waiter;
 
     public MasterActionForClients(ArrayList<Node> catalogueOfNodes, ObjectOutputStream out, ObjectInputStream in, int flag2) {
 
@@ -21,6 +24,16 @@ public class MasterActionForClients extends Thread {
         this.in = in;
         this.catalogueOfNodes = catalogueOfNodes;
         this.flag2 = flag2;
+
+    }
+
+    public MasterActionForClients(ArrayList<Node> catalogueOfNodes, ObjectOutputStream out, ObjectInputStream in, int flag2, Waiter waiter) {
+
+        this.out = out;
+        this.in = in;
+        this.catalogueOfNodes = catalogueOfNodes;
+        this.flag2 = flag2;
+        this.waiter = waiter;
 
     }
 
@@ -73,19 +86,19 @@ public class MasterActionForClients extends Thread {
                 String sha1Hash = HashGenerator.generateSHA1(fileEntry.getFile().getName()); //hash the name of file
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); // convert hex to int
                 System.out.println("dangerously converting fileKey "+fileKey+ " to "+ Math.abs(fileKey % 64));
-                fileKey = Math.abs(fileKey % 64);
+                int idFileKey = Math.abs(fileKey % 64);
 
                 for (int i = 0; i < catalogueOfNodes.size(); i++) { //send the file in the correct(by id) node
 
-                    if (fileKey <= catalogueOfNodes.get(i).getId()) {
+                    if (idFileKey <= catalogueOfNodes.get(i).getId()) {
 
-                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), fileEntry, flag2, fileKey, clientIp);
+                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(i).getPort(), fileEntry, flag2, idFileKey, fileKey, clientIp);
                         mrt.start();
                         break;
 
-                    } else if (fileKey > catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId()) {
+                    } else if (idFileKey > catalogueOfNodes.get(catalogueOfNodes.size() - 1).getId()) {
 
-                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(0).getPort(), fileEntry, flag2, fileKey, clientIp);
+                        MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get(0).getPort(), fileEntry, flag2, idFileKey, fileKey, clientIp);
                         mrt.start();
                         break;
 
@@ -100,14 +113,20 @@ public class MasterActionForClients extends Thread {
                 File file = fileEntry.getFile();
 
                 InetAddress clientIp = (InetAddress) in.readObject();//read the requesting IP
-                System.out.println("Received order from search action. From client IP:" + clientIp);
+                System.out.println("Received order from search action. From client IP:" + clientIp + " for file " + file.getName());
 
                 String sha1Hash = HashGenerator.generateSHA1(file.getName());// hash the name of file with sha1
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); //convert the hex to big int
-                fileKey = Math.abs(fileKey % 64);
+                int idFileKey = Math.abs(fileKey % 64);
 
-                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), fileEntry, 2, fileKey, clientIp);
+                MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), fileEntry, 2, idFileKey, fileKey, clientIp);
                 mrt.start();
+
+                System.out.println("Debug after 111 ");
+
+                new Thread (waiter).start();
+
+                System.out.println("Debug after waiter ");
 
             }
 

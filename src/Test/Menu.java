@@ -15,6 +15,7 @@ public class Menu {
         Scanner sc = new Scanner(System.in);
         int i;
 
+
         MenuListeningThread mlt = new MenuListeningThread();
         mlt.start();
 

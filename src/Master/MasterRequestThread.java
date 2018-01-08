@@ -15,6 +15,7 @@ public class MasterRequestThread extends Thread {
     FileEntry fileEntry;
     int flag2;
     int fileKey;
+    int idFileKey;
     InetAddress clientIp;
 
     public MasterRequestThread(int port, int flag2) { //constructor 1
@@ -32,12 +33,13 @@ public class MasterRequestThread extends Thread {
 
     }
 
-    public MasterRequestThread(int port, FileEntry fileEntry, int flag2, int fileKey, InetAddress clientIp) { //constructor 2
+    public MasterRequestThread(int port, FileEntry fileEntry, int flag2, int idFileKey, int fileKey, InetAddress clientIp) { //constructor 2
 
         this.port = port;
         this.fileEntry = fileEntry;
         this.flag2 = flag2;
         this.fileKey = fileKey;
+        this.idFileKey = idFileKey;
         this.clientIp = clientIp;
 
     }
@@ -74,6 +76,9 @@ public class MasterRequestThread extends Thread {
             } else if (flag2 == 1) { // commit(save) file
 
                 out.writeObject(fileEntry); // send the file name
+                out.flush();
+
+                out.writeInt(idFileKey); // send the key
                 out.flush();
 
                 out.writeInt(fileKey); // send the key
@@ -116,8 +121,8 @@ public class MasterRequestThread extends Thread {
             ioException.printStackTrace();
         } finally {
             try {
-                /*in.close();
-                out.close();*/
+                in.close();
+                out.close();
                 requestSocket.close();
             } catch (Exception ioException) {
                 ioException.printStackTrace();

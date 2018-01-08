@@ -35,10 +35,10 @@ public class Node implements Serializable {
 
     public static void main(String[] args) {
 
-        //int a = Integer.parseInt(args[0]); //get the id as parameter
+        int a = Integer.parseInt(args[0]); //get the id as parameter
 
         //create the node
-        Node n = new Node("localhost", 0, 37);
+        Node n = new Node("localhost", 0, a);
 
         flag = 0;
 
@@ -136,7 +136,7 @@ public class Node implements Serializable {
 
             System.out.println("inside lookup for ,node: " + fingerTable[i].getId());
 
-            if (fileKey >= fingerTable[i].getId() && fingerTable[i].getId() > id) {
+            if (Math.abs(fileKey % 64)>= fingerTable[i].getId() && fingerTable[i].getId() > id) {
 
                 System.out.println("request thread from node: " + fingerTable[i].getId());
 

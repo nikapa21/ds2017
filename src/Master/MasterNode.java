@@ -2,6 +2,10 @@ package Master;
 
 import Chord.FileEntry;
 import Chord.Node;
+import Test.Message;
+import Test.Notifier;
+import Test.Waiter;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,6 +20,7 @@ public class MasterNode {
 
     ArrayList<Node> catalogueOfNodes = new ArrayList<Node>(); // catalogue for all the nodes in system
     int port = 7777; // port of server
+    Message msg = new Message(null, "mymsg");
     //int id = 1;
 
     public static void main(String args[]) {
@@ -67,17 +72,29 @@ public class MasterNode {
 
                 } else if (flag == 3) { // search file
 
-                    MasterActionForClients a = new MasterActionForClients(catalogueOfNodes,out,in,2);
-                    a.start();
+                    MasterActionForClients a = new MasterActionForClients(catalogueOfNodes, out, in, 2, new Waiter(msg, out));
+                    a.start();// Auti i a prepei na ginei notified apo otan flag == 4
 
                 } else if (flag == 4) { // receive the requested file from node and sending back to user
 
                     FileEntry requestedFile = (FileEntry) in.readObject();
                     System.out.println("Received the requested file from node " );
 
+                    /*synchronized (requestedFile){
+                        requestedFile.notifyAll();
+                    }*/
+
+                    Notifier notifier = new Notifier(msg);
+                    msg.setRequestedFile(requestedFile);
+                    msg.setMsg("Notification sent ");
+                    new Thread(notifier).start();
+
                     //create a new request to menu to return the file
-                    MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
-                    mrt.start();
+                    /*MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
+                    mrt.start();*/
+
+                    System.out.println("It would be good to have a way to reply to the old menu request ");
+
 
                 } else if(flag == 5){
 

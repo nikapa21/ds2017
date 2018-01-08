@@ -10,6 +10,11 @@ public class FileEntry implements Serializable{
     String origin;
     String destination;
 
+    public FileEntry() {/*
+        this.file = file;
+        this.fileData = fileData;*/
+    }
+
     public FileEntry(File file, String fileData) {
         this.file = file;
         this.fileData = fileData;

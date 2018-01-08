@@ -39,6 +39,7 @@ public class NodeActionForClients extends Thread {
                 System.out.println("###############\n"+"The Node received a commit action and commited file " + fileEntry.getFile().getName() +
                         " containing the following data \n" + fileEntry.getFileData()+"\n###############\n"); //debug
 
+                int idFileKey = in.readInt();
                 int keyFile = in.readInt();
                 fileKeys.add(keyFile);
                 printFilesKeys();
