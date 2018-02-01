@@ -78,11 +78,7 @@ public class MasterNode {
                 } else if (flag == 4) { // receive the requested file from node and sending back to user
 
                     FileEntry requestedFile = (FileEntry) in.readObject();
-                    System.out.println("Received the requested file from node " );
-
-                    /*synchronized (requestedFile){
-                        requestedFile.notifyAll();
-                    }*/
+                    System.out.println("Received the reply from node " );
 
                     Notifier notifier = new Notifier(msg);
                     msg.setRequestedFile(requestedFile);
@@ -92,9 +88,6 @@ public class MasterNode {
                     //create a new request to menu to return the file
                     /*MasterRequestThread mrt = new MasterRequestThread(7776, requestedFile, 3);
                     mrt.start();*/
-
-                    System.out.println("It would be good to have a way to reply to the old menu request ");
-
 
                 } else if(flag == 5){
 
@@ -145,12 +138,6 @@ public class MasterNode {
                     return 0;
             }
         });
-
-        /*//print the nodes,for test
-        for (int i = 0; i < catalogueOfNodes.size(); i++) {
-            System.out.println(catalogueOfNodes.get(i).toString());
-        }*/
-
     }
 
     void insertNode( ObjectOutputStream out, ObjectInputStream in) {

@@ -36,15 +36,14 @@ public class NodeActionForClients extends Thread {
                 FileEntry fileEntry = (FileEntry) in.readObject();
                 fileEntries.add(fileEntry);
 
-                System.out.println("###############\n"+"The Node received a commit action and commited file " + fileEntry.getFile().getName() +
-                        " containing the following data \n" + fileEntry.getFileData()+"\n###############\n"); //debug
+                System.out.println("###############\n"+"The Node received a commit action and commited file " + fileEntry.getFile().getName() + "\n###############\n"); //debug
 
                 int idFileKey = in.readInt();
                 int keyFile = in.readInt();
                 fileKeys.add(keyFile);
                 printFilesKeys();
 
-                InetAddress clientIp = (InetAddress) in.readObject();
+                String clientIp = (String) in.readObject();
 
             } else if (flag == 2) { //search file
 
@@ -57,7 +56,7 @@ public class NodeActionForClients extends Thread {
 
                 int counterForExistenceOfFile = in.readInt();
 
-                InetAddress clientIp = (InetAddress) in.readObject();
+                String clientIp = (String) in.readObject();
                 System.out.println("The Node received a search action initially ordered by the client IP " + clientIp); //debug
 
                 if (counterForExistenceOfFile>10){

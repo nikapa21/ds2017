@@ -4,6 +4,7 @@ import Chord.FileEntry;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -16,7 +17,7 @@ public class MasterRequestThread extends Thread {
     int flag2;
     int fileKey;
     int idFileKey;
-    InetAddress clientIp;
+    String clientIp;
 
     public MasterRequestThread(int port, int flag2) { //constructor 1
 
@@ -33,7 +34,7 @@ public class MasterRequestThread extends Thread {
 
     }
 
-    public MasterRequestThread(int port, FileEntry fileEntry, int flag2, int idFileKey, int fileKey, InetAddress clientIp) { //constructor 2
+    public MasterRequestThread(int port, FileEntry fileEntry, int flag2, int idFileKey, int fileKey, String clientIp) { //constructor 2
 
         this.port = port;
         this.fileEntry = fileEntry;
@@ -56,7 +57,6 @@ public class MasterRequestThread extends Thread {
 
             //System.out.println("master sends flag action " + flag2); //debug
             //System.out.println("master forwards client IP " + clientIp); //debug
-
             // open a socket from the master to the chord node that will handle the flag action
             requestSocket = new Socket(chordNodeIP, chordNodePort);
 
@@ -68,7 +68,6 @@ public class MasterRequestThread extends Thread {
             out.flush();
 
             if (flag2 == 0) { // to inform nodes that a new node is on system
-
 
                 out.writeBoolean(true);
                 out.flush();
@@ -124,9 +123,8 @@ public class MasterRequestThread extends Thread {
                 in.close();
                 out.close();
                 requestSocket.close();
+            } catch (NullPointerException nullpointer){
             } catch (Exception ioException) {
-                ioException.printStackTrace();
-
             }
         }
 

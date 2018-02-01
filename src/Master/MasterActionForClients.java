@@ -78,14 +78,13 @@ public class MasterActionForClients extends Thread{
 
                 FileEntry fileEntry = (FileEntry) in.readObject(); //read the file
 
-                InetAddress clientIp = (InetAddress) in.readObject();//read the requesting IP
-                System.out.println("Received a commit request from client IP " + clientIp);
-                //String fileData = (String) in.readObject(); //read the file data
-                System.out.println("The commited file contains following data" + fileEntry.getFileData() +"\n"); //debug
+                String clientIp = (String) in.readObject();//read the requesting IP
+                System.out.println("\nReceived a commit request from client IP " + clientIp);
+                //System.out.println("The commited file contains following data" + fileEntry.getFileData() +"\n"); //debug
 
                 String sha1Hash = HashGenerator.generateSHA1(fileEntry.getFile().getName()); //hash the name of file
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); // convert hex to int
-                System.out.println("dangerously converting fileKey "+fileKey+ " to "+ Math.abs(fileKey % 64));
+                System.out.println("Converting fileKey " + fileKey + " to "+ Math.abs(fileKey % 64));
                 int idFileKey = Math.abs(fileKey % 64);
 
                 for (int i = 0; i < catalogueOfNodes.size(); i++) { //send the file in the correct(by id) node
@@ -112,8 +111,8 @@ public class MasterActionForClients extends Thread{
 
                 File file = fileEntry.getFile();
 
-                InetAddress clientIp = (InetAddress) in.readObject();//read the requesting IP
-                System.out.println("Received order from search action. From client IP:" + clientIp + " for file " + file.getName());
+                String clientIp = (String) in.readObject();//read the requesting IP
+                System.out.println("\nReceived order for search action. From client IP:" + clientIp + " for file " + file.getName());
 
                 String sha1Hash = HashGenerator.generateSHA1(file.getName());// hash the name of file with sha1
                 int fileKey = new BigInteger(sha1Hash, 16).intValue(); //convert the hex to big int
@@ -122,11 +121,11 @@ public class MasterActionForClients extends Thread{
                 MasterRequestThread mrt = new MasterRequestThread(catalogueOfNodes.get((int) (Math.random()*((catalogueOfNodes.size()-1 - 0) + 1) + 0)).getPort(), fileEntry, 2, idFileKey, fileKey, clientIp);
                 mrt.start();
 
-                System.out.println("Debug after 111 ");
+                //System.out.println("Debug after 111 ");
 
                 new Thread (waiter).start();
 
-                System.out.println("Debug after waiter ");
+                //System.out.println("Debug after waiter ");
 
             }
 

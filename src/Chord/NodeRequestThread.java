@@ -12,7 +12,7 @@ public class NodeRequestThread extends Thread {
     File file;
     FileEntry fileEntry;
     int counterForExistanceOfFile;
-    InetAddress clientIp;
+    String clientIp;
 
     public NodeRequestThread(Node n, int flag) { //constructor 1
 
@@ -26,7 +26,7 @@ public class NodeRequestThread extends Thread {
         this.flag = flag;
     }
 
-    public NodeRequestThread(Node n, int fileKey, FileEntry fileEntry, int flag,int counterForExistanceOfFile, InetAddress clientIp) {//constructor 3
+    public NodeRequestThread(Node n, int fileKey, FileEntry fileEntry, int flag,int counterForExistanceOfFile, String clientIp) {//constructor 3
 
         this.n = n;
         this.flag = flag;
@@ -37,7 +37,7 @@ public class NodeRequestThread extends Thread {
 
     }
 
-    public NodeRequestThread(FileEntry fileEntry, int flag, InetAddress clientIp) {//constructor 4
+    public NodeRequestThread(FileEntry fileEntry, int flag, String clientIp) {//constructor 4
 
         this.fileEntry = fileEntry;
         this.flag = flag;

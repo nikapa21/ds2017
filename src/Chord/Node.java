@@ -35,10 +35,10 @@ public class Node implements Serializable {
 
     public static void main(String[] args) {
 
-        int a = Integer.parseInt(args[0]); //get the id as parameter
+        //int a = Integer.parseInt(args[0]); //get the id as parameter
 
         //create the node
-        Node n = new Node("localhost", 0, a);
+        Node n = new Node("localhost", 0, 44);
 
         flag = 0;
 
@@ -125,7 +125,7 @@ public class Node implements Serializable {
     }
 
     //look up for the file
-    public void lookUp(int fileKey, FileEntry fileEntry, int counterForExistenceOfFile, InetAddress clientIp) {
+    public void lookUp(int fileKey, FileEntry fileEntry, int counterForExistenceOfFile, String clientIp) {
 
 
         counterForExistenceOfFile++;
